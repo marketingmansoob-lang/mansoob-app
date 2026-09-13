@@ -26,7 +26,8 @@
         .login-card p { color: #777; font-size: 13px; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; text-align: right; }
         .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: var(--primary-brown); font-size: 13px; }
-        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; background: var(--white); }
+        .form-group input:focus, .form-group select:focus { border-color: var(--accent-gold); }
         .btn { background-color: var(--primary-brown); color: var(--white); border: none; width: 100%; padding: 11px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; }
         .error-msg { color: var(--danger); font-size: 13px; margin-top: 10px; display: none; }
 
@@ -62,7 +63,7 @@
         
         .apt-details { font-size: 12px; color: #555; margin-bottom: 12px; }
         .apt-details div { margin-bottom: 5px; display: flex; align-items: center; justify-content: space-between; }
-        .apt-details input { padding: 3px 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; width: 65%; }
+        .apt-details input, .apt-details select { padding: 3px 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; width: 65%; }
         
         .sync-platforms { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; }
         .platform-tag { background: var(--cream-card); padding: 2px 6px; border-radius: 4px; font-size: 10px; color: var(--light-brown); font-weight: 600; }
@@ -87,14 +88,14 @@
 </head>
 <body>
 
-    <!-- شاشة تسجيل الدخول -->
+    <!-- شاشة تسجيل الدخول الآمنة (فارغة تطلب الإدخال) -->
     <div id="login-screen">
         <div class="login-card">
             <h1>منصّة منسوب</h1>
             <p>شركة منسوب للتطوير العقاري</p>
             <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group"><label>اسم المستخدم</label><input type="text" id="username-input" required value="admin"></div>
-                <div class="form-group"><label>كلمة المرور</label><input type="password" id="password-input" required value="mansoub123"></div>
+                <div class="form-group"><label>اسم المستخدم</label><input type="text" id="username-input" required placeholder="أدخل اسم المستخدم (admin)"></div>
+                <div class="form-group"><label>كلمة المرور</label><input type="password" id="password-input" required placeholder="أدخل كلمة المرور"></div>
                 <button type="submit" class="btn">تسجيل الدخول</button>
                 <div id="errorMsg" class="error-msg">اسم المستخدم أو كلمة المرور غير صحيحة!</div>
             </form>
@@ -122,20 +123,20 @@
 
             <div class="section-title">
                 <span>إدارة الوحدات وتعديل البيانات والمزامنة الفورية</span>
-                <button onclick="addApartment()" style="background:var(--primary-brown); color:white; border:none; padding:5px 10px; border-radius:6px; font-size:12px; cursor:pointer;">+ إضافة وحدة</button>
+                <button onclick="addApartment()" style="background:var(--primary-brown); color:white; border:none; padding:5px 10px; border-radius:6px; font-size:12px; cursor:pointer;">+ إضافة وحدة جديدة</button>
             </div>
             
             <div class="apartments-grid" id="apartments-container"></div>
 
             <div class="section-title"><span>سجل المزامنة الحية مع المنصات الخارجية</span></div>
             <div class="sync-log" id="log-container">
-                <div class="log-item"><span>🟢 تم تشغيل النظام بنجاح والربط التلقائي نشط</span> <strong>الآن</strong></div>
+                <div class="log-item"><span>🟢 تم تأمين نظام الدخول بنجاح والربط التلقائي نشط</span> <strong>الآن</strong></div>
             </div>
         </main>
         <footer>جميع الحقوق محفوظة © 2026 - شركة منسوب للتطوير العقاري (تصميم وبرمجة: حمود الأسلمي)</footer>
     </div>
 
-    <!-- نافذة إعدادات تغيير اليوزر والباسورد -->
+    <!-- نافذة إعدادات الحساب منسدلة -->
     <div id="settings-modal">
         <div class="modal-content">
             <h3>تعديل بيانات الدخول (اليوزر والباسورد)</h3>
@@ -152,11 +153,11 @@
         // بيانات الاعتماد الافتراضية
         let systemAuth = { user: 'admin', pass: 'mansoub123' };
 
-        // بيانات الوحدات العقارية
+        // بيانات الوحدات العقارية مع تصنيفات مفصلة
         let apartments = [
-            { id: 1, name: 'شقة الملز الفاخرة - 101', location: 'حي الملز', price: 350, status: 'available', platforms: ['جذر إن', 'بوكينج', 'Airbnb'] },
-            { id: 2, name: 'دوبلكس الشفا - 202', location: 'حي الشفا', price: 500, status: 'available', platforms: ['جذر إن', 'بوكينج', 'Airbnb'] },
-            { id: 3, name: 'شقة الياسمين - 303', location: 'حي الياسمين', price: 420, status: 'available', platforms: ['جذر إن', 'بوكينج', 'Airbnb'] }
+            { id: 1, name: 'شقة الملز الفاخرة - 101', type: 'شقة مفروشة', location: 'حي الملز', price: 350, status: 'available', platforms: ['جذر إن', 'بوكينج', 'Airbnb'] },
+            { id: 2, name: 'دوبلكس الشفا - 202', type: 'دوبلكس', location: 'حي الشفا', price: 500, status: 'available', platforms: ['جذر إن', 'بوكينج', 'Airbnb'] },
+            { id: 3, name: 'شقة الياسمين - 303', type: 'شقة مفروشة', location: 'حي الياسمين', price: 420, status: 'available', platforms: ['جذر إن', 'بوكينج', 'Airbnb'] }
         ];
 
         function handleLogin(event) {
@@ -175,6 +176,8 @@
         function handleLogout() {
             document.getElementById('dashboard-screen').style.display = 'none';
             document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('username-input').value = '';
+            document.getElementById('password-input').value = '';
             document.getElementById('errorMsg').style.display = 'none';
         }
 
@@ -216,8 +219,16 @@
                         <span class="badge ${apt.status}">${apt.status === 'available' ? 'متاحة' : 'محجوزة'}</span>
                     </div>
                     <div class="apt-details">
+                        <div><strong>نوع الوحدة:</strong> 
+                            <select onchange="updateAptType(${apt.id}, this.value)">
+                                <option value="شقة مفروشة" ${apt.type==='شقة مفروشة'?'selected':''}>شقة مفروشة</option>
+                                <option value="دوبلكس" ${apt.type==='دوبلكس'?'selected':''}>دوبلكس</option>
+                                <option value="فيلا" ${apt.type==='فيلا'?'selected':''}>فيلا</option>
+                                <option value="تاون هاوس" ${apt.type==='تاون هاوس'?'selected':''}>تاون هاوس</option>
+                            </select>
+                        </div>
                         <div><strong>الموقع:</strong> <input type="text" value="${apt.location}" onchange="updateAptLoc(${apt.id}, this.value)"></div>
-                        <div><strong>السعر (ريال):</strong> <input type="number" value="${apt.price}" onchange="updateAptPrice(${apt.id}, this.value)"></div>
+                        <div><strong>السعر (ريال/يوم):</strong> <input type="number" value="${apt.price}" onchange="updateAptPrice(${apt.id}, this.value)"></div>
                     </div>
                     <div class="sync-platforms">
                         <span style="font-size:11px; font-weight:bold; color:#555; align-self:center;">حالة المنصات:</span>
@@ -239,12 +250,13 @@
         }
 
         function updateAptName(id, val) { const apt = apartments.find(a => a.id === id); if(apt) apt.name = val; }
+        function updateAptType(id, val) { const apt = apartments.find(a => a.id === id); if(apt) apt.type = val; }
         function updateAptLoc(id, val) { const apt = apartments.find(a => a.id === id); if(apt) apt.location = val; }
         function updateAptPrice(id, val) { const apt = apartments.find(a => a.id === id); if(apt) apt.price = val; }
 
         function addApartment() {
             const newId = apartments.length > 0 ? apartments[apartments.length - 1].id + 1 : 1;
-            apartments.push({ id: newId, name: 'وحدة منسوب الجديدة - ' + newId, location: 'الرياض', price: 350, status: 'available', platforms: ['جذر إن', 'بوكينج', 'Airbnb'] });
+            apartments.push({ id: newId, name: 'وحدة منسوب الجديدة - ' + newId, type: 'شقة مفروشة', location: 'الرياض', price: 400, status: 'available', platforms: ['جذر إن', 'بوكينج', 'Airbnb'] });
             renderDashboard();
         }
 
@@ -260,8 +272,8 @@
             const logContainer = document.getElementById('log-container');
             const timeNow = new Date().toLocaleTimeString('ar-SA');
             const actionText = apt.status === 'booked' ? 
-                `🔒 تم حجز "${apt.name}" عبر (جذر إن) -> وتم إغلاقها تلقائياً في بوكينج و Airbnb.` : 
-                `🔓 تم إلغاء الحجز عن "${apt.name}" -> وأعيد فتح المواعيد في كافة التطبيقات.`;
+                `🔒 [تزامن آلي] تم حجز "${apt.name}" وإغلاق الشاغر في بوكينج و Airbnb.` : 
+                `🔓 [تزامن آلي] تم إلغاء حجز "${apt.name}" وإعادة فتح المواعيد بالمنصات.`;
             
             const logItem = document.createElement('div');
             logItem.className = 'log-item';
