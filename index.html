@@ -88,13 +88,13 @@
 </head>
 <body>
 
-    <!-- شاشة تسجيل الدخول الآمنة (فارغة تطلب الإدخال) -->
+    <!-- شاشة تسجيل الدخول الآمنة -->
     <div id="login-screen">
         <div class="login-card">
             <h1>منصّة منسوب</h1>
             <p>شركة منسوب للتطوير العقاري</p>
             <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group"><label>اسم المستخدم</label><input type="text" id="username-input" required placeholder="أدخل اسم المستخدم (admin)"></div>
+                <div class="form-group"><label>اسم المستخدم</label><input type="text" id="username-input" required placeholder="أدخل اسم المستخدم"></div>
                 <div class="form-group"><label>كلمة المرور</label><input type="password" id="password-input" required placeholder="أدخل كلمة المرور"></div>
                 <button type="submit" class="btn">تسجيل الدخول</button>
                 <div id="errorMsg" class="error-msg">اسم المستخدم أو كلمة المرور غير صحيحة!</div>
@@ -116,8 +116,8 @@
         </header>
         <main>
             <div class="stats-grid">
-                <div class="stat-card"><h3>إجمالي الوحدات</h3><div class="number" id="total-count">3</div></div>
-                <div class="stat-card"><h3>الوحدات المتاحة</h3><div class="number" id="free-count">3</div></div>
+                <div class="stat-card"><h3>إجمالي الوحدات</h3><div class="number" id="total-count">0</div></div>
+                <div class="stat-card"><h3>الوحدات المتاحة</h3><div class="number" id="free-count">0</div></div>
                 <div class="stat-card"><h3>الوحدات المحجوزة</h3><div class="number" id="booked-count">0</div></div>
             </div>
 
@@ -130,7 +130,7 @@
 
             <div class="section-title"><span>سجل المزامنة الحية مع المنصات الخارجية</span></div>
             <div class="sync-log" id="log-container">
-                <div class="log-item"><span>🟢 تم تأمين نظام الدخول بنجاح والربط التلقائي نشط</span> <strong>الآن</strong></div>
+                <div class="log-item"><span>🟢 تم تأمين نظام الدخول وحفظ البيانات بنجاح</span> <strong>الآن</strong></div>
             </div>
         </main>
         <footer>جميع الحقوق محفوظة © 2026 - شركة منسوب للتطوير العقاري (تصميم وبرمجة: حمود الأسلمي)</footer>
@@ -150,15 +150,21 @@
     </div>
 
     <script>
-        // بيانات الاعتماد الافتراضية
-        let systemAuth = { user: 'admin', pass: 'mansoub123' };
-
-        // بيانات الوحدات العقارية مع تصنيفات مفصلة
-        let apartments = [
+        // إعدادات الحساب والبيانات مع التخزين الدائم (localStorage)
+        let systemAuth = JSON.parse(localStorage.getItem('mansoub_auth')) || { user: 'admin', pass: 'mansoub123' };
+        
+        let defaultApartments = [
             { id: 1, name: 'شقة الملز الفاخرة - 101', type: 'شقة مفروشة', location: 'حي الملز', price: 350, status: 'available', platforms: ['جذر إن', 'بوكينج', 'Airbnb'] },
             { id: 2, name: 'دوبلكس الشفا - 202', type: 'دوبلكس', location: 'حي الشفا', price: 500, status: 'available', platforms: ['جذر إن', 'بوكينج', 'Airbnb'] },
             { id: 3, name: 'شقة الياسمين - 303', type: 'شقة مفروشة', location: 'حي الياسمين', price: 420, status: 'available', platforms: ['جذر إن', 'بوكينج', 'Airbnb'] }
         ];
+
+        let apartments = JSON.parse(localStorage.getItem('mansoub_apartments')) || defaultApartments;
+
+        function saveData() {
+            localStorage.setItem('mansoub_apartments', JSON.stringify(apartments));
+            localStorage.setItem('mansoub_auth', JSON.stringify(systemAuth));
+        }
 
         function handleLogin(event) {
             event.preventDefault();
@@ -197,7 +203,8 @@
             if(nu && np) {
                 systemAuth.user = nu;
                 systemAuth.pass = np;
-                alert('تم تحديث بيانات الدخول بنجاح!');
+                saveData();
+                alert('تم تحديث بيانات الدخول وحفظها بنجاح!');
                 closeSettings();
             } else {
                 alert('الرجاء إدخال بيانات صحيحة.');
@@ -215,20 +222,20 @@
                 card.className = 'apartment-card';
                 card.innerHTML = `
                     <div class="apt-header">
-                        <input type="text" class="input-edit" value="${apt.name}" onchange="updateAptName(${apt.id}, this.value)" placeholder="اسم الوحدة">
+                        <input type="text" class="input-edit" value="${apt.name}" onchange="updateAptProp(${apt.id}, 'name', this.value)" placeholder="اسم الوحدة">
                         <span class="badge ${apt.status}">${apt.status === 'available' ? 'متاحة' : 'محجوزة'}</span>
                     </div>
                     <div class="apt-details">
                         <div><strong>نوع الوحدة:</strong> 
-                            <select onchange="updateAptType(${apt.id}, this.value)">
+                            <select onchange="updateAptProp(${apt.id}, 'type', this.value)">
                                 <option value="شقة مفروشة" ${apt.type==='شقة مفروشة'?'selected':''}>شقة مفروشة</option>
                                 <option value="دوبلكس" ${apt.type==='دوبلكس'?'selected':''}>دوبلكس</option>
                                 <option value="فيلا" ${apt.type==='فيلا'?'selected':''}>فيلا</option>
                                 <option value="تاون هاوس" ${apt.type==='تاون هاوس'?'selected':''}>تاون هاوس</option>
                             </select>
                         </div>
-                        <div><strong>الموقع:</strong> <input type="text" value="${apt.location}" onchange="updateAptLoc(${apt.id}, this.value)"></div>
-                        <div><strong>السعر (ريال/يوم):</strong> <input type="number" value="${apt.price}" onchange="updateAptPrice(${apt.id}, this.value)"></div>
+                        <div><strong>الموقع:</strong> <input type="text" value="${apt.location}" onchange="updateAptProp(${apt.id}, 'location', this.value)"></div>
+                        <div><strong>السعر (ريال/يوم):</strong> <input type="number" value="${apt.price}" onchange="updateAptProp(${apt.id}, 'price', this.value)"></div>
                     </div>
                     <div class="sync-platforms">
                         <span style="font-size:11px; font-weight:bold; color:#555; align-self:center;">حالة المنصات:</span>
@@ -247,15 +254,19 @@
             document.getElementById('total-count').innerText = apartments.length;
             document.getElementById('free-count').innerText = free;
             document.getElementById('booked-count').innerText = booked;
+            saveData();
         }
 
-        function updateAptName(id, val) { const apt = apartments.find(a => a.id === id); if(apt) apt.name = val; }
-        function updateAptType(id, val) { const apt = apartments.find(a => a.id === id); if(apt) apt.type = val; }
-        function updateAptLoc(id, val) { const apt = apartments.find(a => a.id === id); if(apt) apt.location = val; }
-        function updateAptPrice(id, val) { const apt = apartments.find(a => a.id === id); if(apt) apt.price = val; }
+        function updateAptProp(id, prop, val) {
+            const apt = apartments.find(a => a.id === id);
+            if(apt) {
+                apt[prop] = val;
+                saveData();
+            }
+        }
 
         function addApartment() {
-            const newId = apartments.length > 0 ? apartments[apartments.length - 1].id + 1 : 1;
+            const newId = apartments.length > 0 ? Math.max(...apartments.map(a => a.id)) + 1 : 1;
             apartments.push({ id: newId, name: 'وحدة منسوب الجديدة - ' + newId, type: 'شقة مفروشة', location: 'الرياض', price: 400, status: 'available', platforms: ['جذر إن', 'بوكينج', 'Airbnb'] });
             renderDashboard();
         }
