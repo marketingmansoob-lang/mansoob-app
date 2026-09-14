@@ -534,6 +534,8 @@
 
         function toggleStatus(id) {
             const apt = apartments.find(a => a.id === id);
+            if (!apt) return;
+            
             apt.status = apt.status === 'available' ? 'booked' : 'available';
             if(apt.status === 'booked') {
                 apt.lastSource = currentLang === 'ar' ? 'إغلاق يدوي / نظام منسوب' : 'Manual Close / Mansoub System';
@@ -545,7 +547,7 @@
                 (currentLang === 'ar' ? `🔒 [تزامن آلي] تم رصد حجز وإغلاق الشاغر لوحدة "${apt.name}".` : `🔒 [Auto Sync] Booking detected, unit "${apt.name}" closed.`) : 
                 (currentLang === 'ar' ? `🔓 [تزامن آلي] تم فتح المواعيد وإتاحة الوحدة "${apt.name}".` : `🔓 [Auto Sync] Unit "${apt.name}" is now available.`);
             
-            showToast(actionTest || actionText);
+            showToast(actionText);
             
             const logItem = document.createElement('div');
             logItem.className = 'log-item';
@@ -580,7 +582,6 @@
             }, 1000);
         }
 
-        // Apply initial language state if already logged in or on load
         applyTranslations();
     </script>
 </body>
