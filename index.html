@@ -15,6 +15,7 @@
             --white: #ffffff;
             --success: #2e7d32;
             --danger: #c62828;
+            --warning: #ed6c02;
             --gathern: #00b0ff;
             --booking: #003580;
             --airbnb: #ff385c;
@@ -37,7 +38,7 @@
         header { background-color: var(--primary-brown); color: var(--white); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .header-title h2 { font-size: 18px; color: var(--accent-gold); }
         .header-title span { font-size: 11px; color: #ddd; }
-        .header-btns { display: flex; gap: 8px; }
+        .header-btns { display: flex; gap: 8px; flex-wrap: wrap; }
         .action-header-btn { background: var(--accent-gold); border: none; color: var(--primary-brown); padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
         .logout-btn { background: transparent; border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
 
@@ -48,9 +49,9 @@
         .stat-card h3 { font-size: 13px; color: #666; margin-bottom: 5px; }
         .stat-card .number { font-size: 20px; font-weight: bold; color: var(--primary-brown); }
 
-        .section-title { font-size: 16px; font-weight: bold; color: var(--primary-brown); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .section-title { font-size: 16px; font-weight: bold; color: var(--primary-brown); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         
-        .apartments-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .apartments-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .apartment-card { background: var(--white); border-radius: 10px; padding: 15px; border: 1px solid #e2dbcd; box-shadow: 0 2px 8px rgba(0,0,0,0.04); position: relative; }
         .apt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .badge { padding: 3px 8px; border-radius: 15px; font-size: 11px; font-weight: bold; }
@@ -67,6 +68,11 @@
         .ical-box { background: var(--cream-bg); padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 11px; border: 1px dashed var(--accent-gold); }
         .ical-box label { font-weight: bold; color: var(--primary-brown); display: block; margin-bottom: 3px; }
         .ical-box input { width: 100%; padding: 5px; font-size: 11px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 6px; background: white; }
+
+        .expenses-box { background: #fdfbf7; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 11px; border: 1px solid #e8dfd1; }
+        .expenses-box label { font-weight: bold; color: var(--primary-brown); display: block; margin-bottom: 4px; }
+        .expense-row { display: flex; gap: 5px; margin-bottom: 5px; }
+        .expense-row input { padding: 4px; border: 1px solid #ddd; border-radius: 4px; font-size: 11px; }
 
         .sync-platforms { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
         .platform-tag { background: var(--cream-card); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; color: #666; }
@@ -121,6 +127,7 @@
                 <span>تطوير: حمود الأسلمي | شركة منسوب للتطوير العقاري</span>
             </div>
             <div class="header-btns">
+                <button class="action-header-btn" onclick="exportReport()">📊 تصدير تقرير الإشغال</button>
                 <button class="action-header-btn" onclick="openSettings()">⚙️ إعدادات الحساب</button>
                 <button class="logout-btn" onclick="handleLogout()">خروج</button>
             </div>
@@ -134,7 +141,7 @@
             </div>
 
             <div class="section-title">
-                <span>إدارة الوحدات وربط تقويمات المنصات (جاذر إن، بوكينج، إيربنب)</span>
+                <span>إدارة الوحدات وربط تقويمات المنصات ومتابعة المصروفات</span>
                 <button onclick="addApartment()" style="background:var(--primary-brown); color:white; border:none; padding:5px 10px; border-radius:6px; font-size:12px; cursor:pointer;">+ إضافة وحدة جديدة</button>
             </div>
             
@@ -142,7 +149,7 @@
 
             <div class="section-title"><span>سجل المزامنة الحية وتقارير منع ازدواج الحجوزات</span></div>
             <div class="sync-log" id="log-container">
-                <div class="log-item"><span>🟢 تم إطلاق النظام المتكامل بنجاح وتفعيل التنبيهات الفورية</span> <strong>الآن</strong></div>
+                <div class="log-item"><span>🟢 تم إطلاق النظام المتكامل وتفعيل سجل المصروفات والصيانة بنجاح</span> <strong>الآن</strong></div>
             </div>
         </main>
         <footer>جميع الحقوق محفوظة © 2026 - شركة منسوب للتطوير العقاري (تصميم وبرمجة: حمود الأسلمي)</footer>
@@ -171,6 +178,9 @@
                 location: 'حي الملز', 
                 price: 350, 
                 status: 'available', 
+                maintenanceStatus: 'جاهزة للاستقبال',
+                expenseTitle: 'صيانة دورية + كهرباء',
+                expenseAmount: 120,
                 gathernUrl: 'https://www.gathern.sa/ical/unit101.ics', 
                 bookingUrl: '', 
                 airbnbUrl: '', 
@@ -240,6 +250,23 @@
             }
         }
 
+        function exportReport() {
+            showToast('جاري تجهيز تقرير الإشغال والمصروفات للتصدير...');
+            setTimeout(() => {
+                let reportContent = "تقرير شركة منسوب للإجارات اليومية\n==============================\n\n";
+                apartments.forEach(a => {
+                    reportContent += `وحدة: ${a.name} | الموقع: ${a.location} | الحالة: ${a.status} | الصيانة: ${a.maintenanceStatus} | سعر الليلة: ${a.price} ر.س | المصروفات: ${a.expenseAmount || 0} ر.س (${a.expenseTitle || 'بدون وصف'})\n`;
+                });
+                const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Mansoub_Occupancy_Report.txt';
+                a.click();
+                showToast('تم تصدير التقرير بنجاح!');
+            }, 1000);
+        }
+
         function renderDashboard() {
             const container = document.getElementById('apartments-container');
             container.innerHTML = '';
@@ -265,8 +292,22 @@
                         </div>
                         <div><strong>الموقع:</strong> <input type="text" value="${apt.location}" onchange="updateAptProp(${apt.id}, 'location', this.value)"></div>
                         <div><strong>السعر (ريال):</strong> <input type="number" value="${apt.price}" onchange="updateAptProp(${apt.id}, 'price', this.value)"></div>
+                        <div><strong>حالة الصيانة:</strong> 
+                            <select onchange="updateAptProp(${apt.id}, 'maintenanceStatus', this.value)" style="font-weight:bold; color:var(--primary-brown);">
+                                <option value="جاهزة للاستقبال" ${apt.maintenanceStatus==='جاهزة للاستقبال'?'selected':''}>🟢 جاهزة للاستقبال</option>
+                                <option value="تحت الصيانة والنظافة" ${apt.maintenanceStatus==='تحت الصيانة والنظافة'?'selected':''}>🟠 تحت الصيانة والنظافة</option>
+                            </select>
+                        </div>
                     </div>
                     
+                    <div class="expenses-box">
+                        <label>💰 سجل المصروفات التشغيلية:</label>
+                        <div class="expense-row">
+                            <input type="text" style="flex:2;" value="${apt.expenseTitle || ''}" onchange="updateAptProp(${apt.id}, 'expenseTitle', this.value)" placeholder="بيان المصروف (صيانة، فاتورة...)">
+                            <input type="number" style="flex:1;" value="${apt.expenseAmount || 0}" onchange="updateAptProp(${apt.id}, 'expenseAmount', Number(this.value))" placeholder="المبلغ">
+                        </div>
+                    </div>
+
                     <div class="ical-box">
                         <label>🔗 روابط الـ iCal للمنصات الخارجيّة:</label>
                         <input type="text" value="${apt.gathernUrl || ''}" onchange="updateAptProp(${apt.id}, 'gathernUrl', this.value)" placeholder="رابط جاذر إن (Gathern)">
@@ -321,6 +362,9 @@
                 location: 'الرياض', 
                 price: 400, 
                 status: 'available', 
+                maintenanceStatus: 'جاهزة للاستقبال',
+                expenseTitle: 'تجهيزات أولية',
+                expenseAmount: 0,
                 gathernUrl: '', 
                 bookingUrl: '', 
                 airbnbUrl: '', 
