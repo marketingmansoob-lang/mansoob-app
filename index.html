@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة منسوب للإيجارات اليومية</title>
+    <title>منصة منسوب للإيجارات اليومية | Mansoub Daily Rentals</title>
     <style>
         :root {
             --primary-brown: #523f27;
@@ -24,12 +24,12 @@
         body { background-color: var(--cream-bg); color: var(--text-dark); min-height: 100vh; position: relative; }
         
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, var(--primary-brown), #3a2c1b); padding: 20px; }
-        .login-card { background: var(--white); padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; max-width: 400px; text-align: center; border-top: 5px solid var(--accent-gold); }
+        .login-card { background: var(--white); padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; max-width: 400px; text-align: center; border-top: 5px solid var(--accent-gold); position: relative; }
         .login-card h1 { color: var(--primary-brown); font-size: 22px; margin-bottom: 5px; }
         .login-card p { color: #777; font-size: 13px; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; text-align: right; }
+        .form-group { margin-bottom: 15px; text-align: inherit; }
         .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: var(--primary-brown); font-size: 13px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; background: var(--white); }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; background: var(--white); text-align: inherit; }
         .form-group input:focus, .form-group select:focus { border-color: var(--accent-gold); }
         .btn { background-color: var(--primary-brown); color: var(--white); border: none; width: 100%; padding: 11px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; }
         .error-msg { color: var(--danger); font-size: 13px; margin-top: 10px; display: none; }
@@ -38,14 +38,15 @@
         header { background-color: var(--primary-brown); color: var(--white); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .header-title h2 { font-size: 18px; color: var(--accent-gold); }
         .header-title span { font-size: 11px; color: #ddd; }
-        .header-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+        .header-btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
         .action-header-btn { background: var(--accent-gold); border: none; color: var(--primary-brown); padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
+        .lang-switch-btn { background: #3a2c1b; border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
         .logout-btn { background: transparent; border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
 
         main { padding: 20px; flex: 1; max-width: 1100px; margin: 0 auto; width: 100%; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .stat-card { background: var(--white); padding: 15px; border-radius: 10px; border-right: 4px solid var(--accent-gold); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .stat-card { background: var(--white); padding: 15px; border-radius: 10px; border-inline-start: 4px solid var(--accent-gold); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
         .stat-card h3 { font-size: 13px; color: #666; margin-bottom: 5px; }
         .stat-card .number { font-size: 20px; font-weight: bold; color: var(--primary-brown); }
 
@@ -58,27 +59,27 @@
         .badge.available { background-color: #e8f5e9; color: var(--success); }
         .badge.booked { background-color: #ffebee; color: var(--danger); }
         
-        .input-edit { width: 100%; padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; margin-bottom: 8px; font-weight: bold; color: var(--primary-brown); outline: none; }
+        .input-edit { width: 100%; padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; margin-bottom: 8px; font-weight: bold; color: var(--primary-brown); outline: none; text-align: inherit; }
         .input-edit:focus { border-color: var(--accent-gold); }
         
         .apt-details { font-size: 12px; color: #555; margin-bottom: 12px; }
         .apt-details div { margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
-        .apt-details input, .apt-details select { padding: 4px 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; width: 65%; }
+        .apt-details input, .apt-details select { padding: 4px 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; width: 65%; text-align: inherit; }
         
         .ical-box { background: var(--cream-bg); padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 11px; border: 1px dashed var(--accent-gold); }
         .ical-box label { font-weight: bold; color: var(--primary-brown); display: block; margin-bottom: 3px; }
-        .ical-box input { width: 100%; padding: 5px; font-size: 11px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 6px; background: white; }
+        .ical-box input { width: 100%; padding: 5px; font-size: 11px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 6px; background: white; text-align: left; direction: ltr; }
 
         .expenses-box { background: #fdfbf7; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 11px; border: 1px solid #e8dfd1; }
         .expenses-box label { font-weight: bold; color: var(--primary-brown); display: block; margin-bottom: 4px; }
         .expense-row { display: flex; gap: 5px; margin-bottom: 5px; }
-        .expense-row input { padding: 4px; border: 1px solid #ddd; border-radius: 4px; font-size: 11px; }
+        .expense-row input { padding: 4px; border: 1px solid #ddd; border-radius: 4px; font-size: 11px; text-align: inherit; }
 
         .sync-platforms { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
         .platform-tag { background: var(--cream-card); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; color: #666; }
-        .platform-tag.gathern { border-right: 3px solid var(--gathern); }
-        .platform-tag.booking { border-right: 3px solid var(--booking); }
-        .platform-tag.airbnb { border-right: 3px solid var(--airbnb); }
+        .platform-tag.gathern { border-inline-start: 3px solid var(--gathern); }
+        .platform-tag.booking { border-inline-start: 3px solid var(--booking); }
+        .platform-tag.airbnb { border-inline-start: 3px solid var(--airbnb); }
         .platform-tag.locked { background: #ffebee; color: var(--danger); text-decoration: line-through; opacity: 0.7; }
         
         .actions-box { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -91,13 +92,13 @@
         .log-item { font-size: 12px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; color: #555; }
 
         /* Toast Notifications */
-        #toast-container { position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--primary-brown); color: var(--white); padding: 12px 20px; border-radius: 8px; font-size: 13px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-right: 5px solid var(--accent-gold); animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards; }
+        #toast-container { position: fixed; bottom: 20px; inset-inline-start: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--primary-brown); color: var(--white); padding: 12px 20px; border-radius: 8px; font-size: 13px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-inline-start: 5px solid var(--accent-gold); animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards; }
         @keyframes slideIn { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
 
         #settings-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; padding: 20px; z-index: 100; }
-        .modal-content { background: var(--white); padding: 25px; border-radius: 12px; width: 100%; max-width: 350px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .modal-content { background: var(--white); padding: 25px; border-radius: 12px; width: 100%; max-width: 350px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: inherit; }
         .modal-content h3 { color: var(--primary-brown); margin-bottom: 15px; font-size: 16px; }
 
         footer { text-align: center; padding: 12px; font-size: 11px; color: #777; background-color: var(--cream-card); border-top: 1px solid #e2dbcd; margin-top: auto; }
@@ -109,12 +110,13 @@
 
     <div id="login-screen">
         <div class="login-card">
-            <h1>منصّة منسوب</h1>
-            <p>شركة منسوب للتطوير العقاري</p>
+            <button onclick="toggleLanguage()" style="position:absolute; top:15px; inset-inline-end:15px; background:var(--cream-bg); border:1px solid var(--accent-gold); color:var(--primary-brown); padding:3px 8px; border-radius:5px; font-size:11px; cursor:pointer; font-weight:bold;" id="login-lang-btn">English</button>
+            <h1 id="l-title">منصّة منسوب</h1>
+            <p id="l-sub">شركة منسوب للتطوير العقاري</p>
             <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group"><label>اسم المستخدم</label><input type="text" id="username-input" required placeholder="أدخل اسم المستخدم"></div>
-                <div class="form-group"><label>كلمة المرور</label><input type="password" id="password-input" required placeholder="أدخل كلمة المرور"></div>
-                <button type="submit" class="btn">تسجيل الدخول</button>
+                <div class="form-group"><label id="l-user-lbl">اسم المستخدم</label><input type="text" id="username-input" required placeholder="أدخل اسم المستخدم"></div>
+                <div class="form-group"><label id="l-pass-lbl">كلمة المرور</label><input type="password" id="password-input" required placeholder="أدخل كلمة المرور"></div>
+                <button type="submit" class="btn" id="l-btn">تسجيل الدخول</button>
                 <div id="errorMsg" class="error-msg">اسم المستخدم أو كلمة المرور غير صحيحة!</div>
             </form>
         </div>
@@ -123,51 +125,53 @@
     <div id="dashboard-screen">
         <header>
             <div class="header-title">
-                <h2>نظام إدارة المزامنة (Channel Manager Pro)</h2>
-                <span>تطوير: حمود الأسلمي | شركة منسوب للتطوير العقاري</span>
+                <h2 id="d-main-title">نظام إدارة المزامنة (Channel Manager Pro)</h2>
+                <span id="d-sub-title">تطوير: حمود الأسلمي | شركة منسوب للتطوير العقاري</span>
             </div>
             <div class="header-btns">
-                <button class="action-header-btn" onclick="exportReport()">📊 تصدير تقرير الإشغال</button>
-                <button class="action-header-btn" onclick="openSettings()">⚙️ إعدادات الحساب</button>
-                <button class="logout-btn" onclick="handleLogout()">خروج</button>
+                <button class="lang-switch-btn" onclick="toggleLanguage()" id="lang-btn">English</button>
+                <button class="action-header-btn" onclick="exportReport()" id="btn-export">📊 تصدير تقرير الإشغال</button>
+                <button class="action-header-btn" onclick="openSettings()" id="btn-settings">⚙️ إعدادات الحساب</button>
+                <button class="logout-btn" onclick="handleLogout()" id="btn-logout">خروج</button>
             </div>
         </header>
         <main>
             <div class="stats-grid">
-                <div class="stat-card"><h3>إجمالي الوحدات</h3><div class="number" id="total-count">0</div></div>
-                <div class="stat-card"><h3>الوحدات المتاحة</h3><div class="number" id="free-count">0</div></div>
-                <div class="stat-card"><h3>الوحدات المحجوزة</h3><div class="number" id="booked-count">0</div></div>
-                <div class="stat-card"><h3>نسبة الإشغال الحالية</h3><div class="number" id="occupancy-rate">0%</div></div>
+                <div class="stat-card"><h3 id="stat-t1">إجمالي الوحدات</h3><div class="number" id="total-count">0</div></div>
+                <div class="stat-card"><h3 id="stat-t2">الوحدات المتاحة</h3><div class="number" id="free-count">0</div></div>
+                <div class="stat-card"><h3 id="stat-t3">الوحدات المحجوزة</h3><div class="number" id="booked-count">0</div></div>
+                <div class="stat-card"><h3 id="stat-t4">نسبة الإشغال الحالية</h3><div class="number" id="occupancy-rate">0%</div></div>
             </div>
 
             <div class="section-title">
-                <span>إدارة الوحدات وربط تقويمات المنصات ومتابعة المصروفات</span>
-                <button onclick="addApartment()" style="background:var(--primary-brown); color:white; border:none; padding:5px 10px; border-radius:6px; font-size:12px; cursor:pointer;">+ إضافة وحدة جديدة</button>
+                <span id="sec-t1">إدارة الوحدات وربط تقويمات المنصات ومتابعة المصروفات</span>
+                <button onclick="addApartment()" style="background:var(--primary-brown); color:white; border:none; padding:5px 10px; border-radius:6px; font-size:12px; cursor:pointer;" id="btn-add-apt">+ إضافة وحدة جديدة</button>
             </div>
             
             <div class="apartments-grid" id="apartments-container"></div>
 
-            <div class="section-title"><span>سجل المزامنة الحية وتقارير منع ازدواج الحجوزات</span></div>
+            <div class="section-title"><span id="sec-t2">سجل المزامنة الحية وتقارير منع ازدواج الحجوزات</span></div>
             <div class="sync-log" id="log-container">
-                <div class="log-item"><span>🟢 تم إطلاق النظام المتكامل وتفعيل سجل المصروفات والصيانة بنجاح</span> <strong>الآن</strong></div>
+                <div class="log-item"><span id="log-init">🟢 تم إطلاق النظام المتكامل وتفعيل سجل المصروفات والصيانة بنجاح</span> <strong id="log-time-init">الآن</strong></div>
             </div>
         </main>
-        <footer>جميع الحقوق محفوظة © 2026 - شركة منسوب للتطوير العقاري (تصميم وبرمجة: حمود الأسلمي)</footer>
+        <footer id="footer-text">جميع الحقوق محفوظة © 2026 - شركة منسوب للتطوير العقاري (تصميم وبرمجة: حمود الأسلمي)</footer>
     </div>
 
     <div id="settings-modal">
         <div class="modal-content">
-            <h3>تعديل بيانات الدخول</h3>
-            <div class="form-group"><label>اسم المستخدم الجديد</label><input type="text" id="new-user"></div>
-            <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="new-pass"></div>
+            <h3 id="m-title">تعديل بيانات الدخول</h3>
+            <div class="form-group"><label id="m-user-lbl">اسم المستخدم الجديد</label><input type="text" id="new-user"></div>
+            <div class="form-group"><label id="m-pass-lbl">كلمة المرور الجديدة</label><input type="password" id="new-pass"></div>
             <div style="display: flex; gap: 8px; margin-top: 15px;">
-                <button class="btn" onclick="saveSettings()">حفظ التعديلات</button>
-                <button onclick="closeSettings()" style="background:#ddd; border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold;">إلغاء</button>
+                <button class="btn" onclick="saveSettings()" id="m-save-btn">حفظ التعديلات</button>
+                <button onclick="closeSettings()" style="background:#ddd; border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold;" id="m-cancel-btn">إلغاء</button>
             </div>
         </div>
     </div>
 
     <script>
+        let currentLang = localStorage.getItem('mansoub_lang') || 'ar';
         let systemAuth = JSON.parse(localStorage.getItem('mansoub_auth')) || { user: 'admin', pass: 'mansoub123' };
         
         let defaultApartments = [
@@ -190,6 +194,149 @@
 
         let apartments = JSON.parse(localStorage.getItem('mansoub_apartments')) || defaultApartments;
 
+        const translations = {
+            ar: {
+                loginTitle: "منصّة منسوب",
+                loginSub: "شركة منسوب للتطوير العقاري",
+                userLbl: "اسم المستخدم",
+                passLbl: "كلمة المرور",
+                loginBtn: "تسجيل الدخول",
+                loginErr: "اسم المستخدم أو كلمة المرور غير صحيحة!",
+                mainTitle: "نظام إدارة المزامنة (Channel Manager Pro)",
+                subTitle: "تطوير: حمود الأسلمي | شركة منسوب للتطوير العقاري",
+                langBtn: "English",
+                btnExport: "📊 تصدير تقرير الإشغال",
+                btnSettings: "⚙️ إعدادات الحساب",
+                btnLogout: "خروج",
+                stat1: "إجمالي الوحدات",
+                stat2: "الوحدات المتاحة",
+                stat3: "الوحدات المحجوزة",
+                stat4: "نسبة الإشغال الحالية",
+                sec1: "إدارة الوحدات وربط تقويمات المنصات ومتابعة المصروفات",
+                btnAddApt: "+ إضافة وحدة جديدة",
+                sec2: "سجل المزامنة الحية وتقارير منع ازدواج الحجوزات",
+                logInit: "🟢 تم إطلاق النظام المتكامل وتفعيل سجل المصروفات والصيانة بنجاح",
+                now: "الآن",
+                footer: "جميع الحقوق محفوظة © 2026 - شركة منسوب للتطوير العقاري (تصميم وبرمجة: حمود الأسلمي)",
+                modalTitle: "تعديل بيانات الدخول",
+                modalUser: "اسم المستخدم الجديد",
+                modalPass: "كلمة المرور الجديدة",
+                modalSave: "حفظ التعديلات",
+                modalCancel: "إلغاء",
+                aptTypeLbl: "نوع الوحدة:",
+                locLbl: "الموقع:",
+                priceLbl: "السعر (ريال):",
+                maintLbl: "حالة الصيانة:",
+                maintReady: "🟢 جاهزة للاستقبال",
+                maintWorking: "🟠 تحت الصيانة والنظافة",
+                expenseLbl: "💰 سجل المصروفات التشغيلية:",
+                expensePh: "بيان المصروف (صيانة، فاتورة...)",
+                expenseAmountPh: "المبلغ",
+                icalLbl: "🔗 روابط الـ iCal للمنصات الخارجيّة:",
+                platformsLbl: "المنصات:",
+                lockedSource: "🔒 مصدر الحجز المغلق:",
+                btnBook: "حجز يدوي / إغلاق",
+                btnFree: "فتح الشاغر",
+                btnSync: "🔄 فحص الكل",
+                btnDel: "حذف",
+                statusAvail: "متاحة",
+                statusBooked: "محجوزة"
+            },
+            en: {
+                loginTitle: "Mansoub Platform",
+                loginSub: "Mansoub Real Estate Development",
+                userLbl: "Username",
+                passLbl: "Password",
+                loginBtn: "Login",
+                loginErr: "Invalid username or password!",
+                mainTitle: "Channel Manager Pro System",
+                subTitle: "Developer: Hamoud Al-Aslami | Mansoub Real Estate",
+                langBtn: "العربية",
+                btnExport: "📊 Export Occupancy Report",
+                btnSettings: "⚙️ Account Settings",
+                btnLogout: "Logout",
+                stat1: "Total Units",
+                stat2: "Available Units",
+                stat3: "Booked Units",
+                stat4: "Current Occupancy",
+                sec1: "Unit Management, iCal Sync & Expenses",
+                btnAddApt: "+ Add New Unit",
+                sec2: "Live Sync Log & Double Booking Prevention",
+                logInit: "🟢 Integrated system launched successfully with expenses & maintenance.",
+                now: "Just now",
+                footer: "All rights reserved © 2026 - Mansoub Real Estate Development",
+                modalTitle: "Edit Login Credentials",
+                modalUser: "New Username",
+                modalPass: "New Password",
+                modalSave: "Save Changes",
+                modalCancel: "Cancel",
+                aptTypeLbl: "Unit Type:",
+                locLbl: "Location:",
+                priceLbl: "Price (SAR):",
+                maintLbl: "Maintenance Status:",
+                maintReady: "🟢 Ready for Guests",
+                maintWorking: "🟠 Under Maintenance",
+                expenseLbl: "💰 Operational Expenses Log:",
+                expensePh: "Expense description (maintenance, bill...)",
+                expenseAmountPh: "Amount",
+                icalLbl: "🔗 External Platforms iCal Links:",
+                platformsLbl: "Platforms:",
+                lockedSource: "🔒 Locked Source:",
+                btnBook: "Manual Book / Close",
+                btnFree: "Open Slot",
+                btnSync: "🔄 Sync All",
+                btnDel: "Delete",
+                statusAvail: "Available",
+                statusBooked: "Booked"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            localStorage.setItem('mansoub_lang', currentLang);
+            applyTranslations();
+            renderDashboard();
+        }
+
+        function applyTranslations() {
+            const t = translations[currentLang];
+            const html = document.getElementById('html-root');
+            html.setAttribute('lang', currentLang);
+            html.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+
+            document.getElementById('login-lang-btn').innerText = t.langBtn;
+            document.getElementById('l-title').innerText = t.loginTitle;
+            document.getElementById('l-sub').innerText = t.loginSub;
+            document.getElementById('l-user-lbl').innerText = t.userLbl;
+            document.getElementById('l-pass-lbl').innerText = t.passLbl;
+            document.getElementById('l-btn').innerText = t.loginBtn;
+
+            document.getElementById('d-main-title').innerText = t.mainTitle;
+            document.getElementById('d-sub-title').innerText = t.subTitle;
+            document.getElementById('lang-btn').innerText = t.langBtn;
+            document.getElementById('btn-export').innerText = t.btnExport;
+            document.getElementById('btn-settings').innerText = t.btnSettings;
+            document.getElementById('btn-logout').innerText = t.btnLogout;
+
+            document.getElementById('stat-t1').innerText = t.stat1;
+            document.getElementById('stat-t2').innerText = t.stat2;
+            document.getElementById('stat-t3').innerText = t.stat3;
+            document.getElementById('stat-t4').innerText = t.stat4;
+
+            document.getElementById('sec-t1').innerText = t.sec1;
+            document.getElementById('btn-add-apt').innerText = t.btnAddApt;
+            document.getElementById('sec-t2').innerText = t.sec2;
+            document.getElementById('log-init').innerText = t.logInit;
+            document.getElementById('log-time-init').innerText = t.now;
+            document.getElementById('footer-text').innerText = t.footer;
+
+            document.getElementById('m-title').innerText = t.modalTitle;
+            document.getElementById('m-user-lbl').innerText = t.modalUser;
+            document.getElementById('m-pass-lbl').innerText = t.modalPass;
+            document.getElementById('m-save-btn').innerText = t.modalSave;
+            document.getElementById('m-cancel-btn').innerText = t.modalCancel;
+        }
+
         function showToast(message) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -211,10 +358,13 @@
             if (u === systemAuth.user && p === systemAuth.pass) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('dashboard-screen').style.display = 'flex';
+                applyTranslations();
                 renderDashboard();
-                showToast('مرحباً بك في لوحة تحكم شركة منسوب العقارية');
+                showToast(currentLang === 'ar' ? 'مرحباً بك في لوحة تحكم شركة منسوب العقارية' : 'Welcome to Mansoub Dashboard');
             } else {
-                document.getElementById('errorMsg').style.display = 'block';
+                const err = document.getElementById('errorMsg');
+                err.innerText = translations[currentLang].loginErr;
+                err.style.display = 'block';
             }
         }
 
@@ -224,6 +374,7 @@
             document.getElementById('username-input').value = '';
             document.getElementById('password-input').value = '';
             document.getElementById('errorMsg').style.display = 'none';
+            applyTranslations();
         }
 
         function openSettings() {
@@ -243,31 +394,32 @@
                 systemAuth.user = nu;
                 systemAuth.pass = np;
                 saveData();
-                showToast('تم تحديث بيانات الدخول وحفظها بنجاح!');
+                showToast(currentLang === 'ar' ? 'تم تحديث بيانات الدخول بنجاح!' : 'Credentials updated successfully!');
                 closeSettings();
             } else {
-                alert('الرجاء إدخال بيانات صحيحة.');
+                alert(currentLang === 'ar' ? 'الرجاء إدخال بيانات صحيحة.' : 'Please enter valid data.');
             }
         }
 
         function exportReport() {
-            showToast('جاري تجهيز تقرير الإشغال والمصروفات للتصدير...');
+            showToast(currentLang === 'ar' ? 'جاري تجهيز التقرير للتصدير...' : 'Preparing report for export...');
             setTimeout(() => {
-                let reportContent = "تقرير شركة منسوب للإجارات اليومية\n==============================\n\n";
+                let reportContent = currentLang === 'ar' ? "تقرير شركة منسوب للإجارات اليومية\n==============================\n\n" : "Mansoub Daily Rentals Report\n============================\n\n";
                 apartments.forEach(a => {
-                    reportContent += `وحدة: ${a.name} | الموقع: ${a.location} | الحالة: ${a.status} | الصيانة: ${a.maintenanceStatus} | سعر الليلة: ${a.price} ر.س | المصروفات: ${a.expenseAmount || 0} ر.س (${a.expenseTitle || 'بدون وصف'})\n`;
+                    reportContent += `Unit: ${a.name} | Location: ${a.location} | Status: ${a.status} | Maintenance: ${a.maintenanceStatus} | Price: ${a.price} | Expenses: ${a.expenseAmount || 0} (${a.expenseTitle || 'N/A'})\n`;
                 });
                 const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
                 const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'Mansoub_Occupancy_Report.txt';
-                a.click();
-                showToast('تم تصدير التقرير بنجاح!');
+                const elem = document.createElement('a');
+                elem.href = url;
+                elem.download = 'Mansoub_Report.txt';
+                elem.click();
+                showToast(currentLang === 'ar' ? 'تم تصدير التقرير بنجاح!' : 'Report exported successfully!');
             }, 1000);
         }
 
         function renderDashboard() {
+            const t = translations[currentLang];
             const container = document.getElementById('apartments-container');
             container.innerHTML = '';
             let free = 0, booked = 0;
@@ -278,58 +430,58 @@
                 card.className = 'apartment-card';
                 card.innerHTML = `
                     <div class="apt-header">
-                        <input type="text" class="input-edit" value="${apt.name}" onchange="updateAptProp(${apt.id}, 'name', this.value)" placeholder="اسم الوحدة">
-                        <span class="badge ${apt.status}">${apt.status === 'available' ? 'متاحة' : 'محجوزة'}</span>
+                        <input type="text" class="input-edit" value="${apt.name}" onchange="updateAptProp(${apt.id}, 'name', this.value)" placeholder="Unit Name">
+                        <span class="badge ${apt.status}">${apt.status === 'available' ? t.statusAvail : t.statusBooked}</span>
                     </div>
                     <div class="apt-details">
-                        <div><strong>نوع الوحدة:</strong> 
+                        <div><strong>${t.aptTypeLbl}</strong> 
                             <select onchange="updateAptProp(${apt.id}, 'type', this.value)">
-                                <option value="شقة مفروشة" ${apt.type==='شقة مفروشة'?'selected':''}>شقة مفروشة</option>
-                                <option value="دوبلكس" ${apt.type==='دوبلكس'?'selected':''}>دوبلكس</option>
-                                <option value="فيلا" ${apt.type==='فيلا'?'selected':''}>فيلا</option>
-                                <option value="تاون هاوس" ${apt.type==='تاون هاوس'?'selected':''}>تاون هاوس</option>
+                                <option value="شقة مفروشة" ${apt.type==='شقة مفروشة'?'selected':''}>${currentLang==='ar'?'شقة مفروشة':'Furnished Apartment'}</option>
+                                <option value="دوبلكس" ${apt.type==='دوبلكس'?'selected':''}>${currentLang==='ar'?'دوبلكس':'Duplex'}</option>
+                                <option value="فيلا" ${apt.type==='فيلا'?'selected':''}>${currentLang==='ar'?'فيلا':'Villa'}</option>
+                                <option value="تاون هاوس" ${apt.type==='تاون هاوس'?'selected':''}>${currentLang==='ar'?'تاون هاوس':'Townhouse'}</option>
                             </select>
                         </div>
-                        <div><strong>الموقع:</strong> <input type="text" value="${apt.location}" onchange="updateAptProp(${apt.id}, 'location', this.value)"></div>
-                        <div><strong>السعر (ريال):</strong> <input type="number" value="${apt.price}" onchange="updateAptProp(${apt.id}, 'price', this.value)"></div>
-                        <div><strong>حالة الصيانة:</strong> 
+                        <div><strong>${t.locLbl}</strong> <input type="text" value="${apt.location}" onchange="updateAptProp(${apt.id}, 'location', this.value)"></div>
+                        <div><strong>${t.priceLbl}</strong> <input type="number" value="${apt.price}" onchange="updateAptProp(${apt.id}, 'price', this.value)"></div>
+                        <div><strong>${t.maintLbl}</strong> 
                             <select onchange="updateAptProp(${apt.id}, 'maintenanceStatus', this.value)" style="font-weight:bold; color:var(--primary-brown);">
-                                <option value="جاهزة للاستقبال" ${apt.maintenanceStatus==='جاهزة للاستقبال'?'selected':''}>🟢 جاهزة للاستقبال</option>
-                                <option value="تحت الصيانة والنظافة" ${apt.maintenanceStatus==='تحت الصيانة والنظافة'?'selected':''}>🟠 تحت الصيانة والنظافة</option>
+                                <option value="جاهزة للاستقبال" ${apt.maintenanceStatus==='جاهزة للاستقبال'?'selected':''}>${t.maintReady}</option>
+                                <option value="تحت الصيانة والنظافة" ${apt.maintenanceStatus==='تحت الصيانة والنظافة'?'selected':''}>${t.maintWorking}</option>
                             </select>
                         </div>
                     </div>
                     
                     <div class="expenses-box">
-                        <label>💰 سجل المصروفات التشغيلية:</label>
+                        <label>${t.expenseLbl}</label>
                         <div class="expense-row">
-                            <input type="text" style="flex:2;" value="${apt.expenseTitle || ''}" onchange="updateAptProp(${apt.id}, 'expenseTitle', this.value)" placeholder="بيان المصروف (صيانة، فاتورة...)">
-                            <input type="number" style="flex:1;" value="${apt.expenseAmount || 0}" onchange="updateAptProp(${apt.id}, 'expenseAmount', Number(this.value))" placeholder="المبلغ">
+                            <input type="text" style="flex:2;" value="${apt.expenseTitle || ''}" onchange="updateAptProp(${apt.id}, 'expenseTitle', this.value)" placeholder="${t.expensePh}">
+                            <input type="number" style="flex:1;" value="${apt.expenseAmount || 0}" onchange="updateAptProp(${apt.id}, 'expenseAmount', Number(this.value))" placeholder="${t.expenseAmountPh}">
                         </div>
                     </div>
 
                     <div class="ical-box">
-                        <label>🔗 روابط الـ iCal للمنصات الخارجيّة:</label>
-                        <input type="text" value="${apt.gathernUrl || ''}" onchange="updateAptProp(${apt.id}, 'gathernUrl', this.value)" placeholder="رابط جاذر إن (Gathern)">
-                        <input type="text" value="${apt.bookingUrl || ''}" onchange="updateAptProp(${apt.id}, 'bookingUrl', this.value)" placeholder="رابط بوكينج (Booking)">
-                        <input type="text" value="${apt.airbnbUrl || ''}" onchange="updateAptProp(${apt.id}, 'airbnbUrl', this.value)" placeholder="رابط إيربنب (Airbnb)">
+                        <label>${t.icalLbl}</label>
+                        <input type="text" value="${apt.gathernUrl || ''}" onchange="updateAptProp(${apt.id}, 'gathernUrl', this.value)" placeholder="Gathern iCal link">
+                        <input type="text" value="${apt.bookingUrl || ''}" onchange="updateAptProp(${apt.id}, 'bookingUrl', this.value)" placeholder="Booking iCal link">
+                        <input type="text" value="${apt.airbnbUrl || ''}" onchange="updateAptProp(${apt.id}, 'airbnbUrl', this.value)" placeholder="Airbnb iCal link">
                     </div>
 
                     <div class="sync-platforms">
-                        <span style="font-size:11px; font-weight:bold; color:#555;">المنصات:</span>
-                        <span class="platform-tag gathern ${apt.status === 'booked' ? 'locked' : ''}">جاذر إن</span>
-                        <span class="platform-tag booking ${apt.status === 'booked' ? 'locked' : ''}">بوكينج</span>
+                        <span style="font-size:11px; font-weight:bold; color:#555;">${t.platformsLbl}</span>
+                        <span class="platform-tag gathern ${apt.status === 'booked' ? 'locked' : ''}">Gathern</span>
+                        <span class="platform-tag booking ${apt.status === 'booked' ? 'locked' : ''}">Booking</span>
                         <span class="platform-tag airbnb ${apt.status === 'booked' ? 'locked' : ''}">Airbnb</span>
                     </div>
                     
-                    ${apt.status === 'booked' ? `<div style="font-size:11px; color:var(--danger); margin-bottom:10px; font-weight:bold;">🔒 مصدر الحجز المغلق: ${apt.lastSource || 'منصة خارجية'}</div>` : ''}
+                    ${apt.status === 'booked' ? `<div style="font-size:11px; color:var(--danger); margin-bottom:10px; font-weight:bold;">${t.lockedSource} ${apt.lastSource || 'External'}</div>` : ''}
 
                     <div class="actions-box">
                         <button class="toggle-btn ${apt.status === 'available' ? 'btn-book' : 'btn-free'}" onclick="toggleStatus(${apt.id})">
-                            ${apt.status === 'available' ? 'حجز يدوي / إغلاق' : 'فتح الشاغر'}
+                            ${apt.status === 'available' ? t.btnBook : t.btnFree}
                         </button>
-                        <button class="sync-now-btn" onclick="syncIcal(${apt.id})">🔄 فحص الكل</button>
-                        <button onclick="deleteApt(${apt.id})" style="background:#eee; border:none; padding:7px 8px; border-radius:6px; cursor:pointer; color:#c62828; font-weight:bold; font-size:11px;">حذف</button>
+                        <button class="sync-now-btn" onclick="syncIcal(${apt.id})">${t.btnSync}</button>
+                        <button onclick="deleteApt(${apt.id})" style="background:#eee; border:none; padding:7px 8px; border-radius:6px; cursor:pointer; color:#c62828; font-weight:bold; font-size:11px;">${t.btnDel}</button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -368,32 +520,32 @@
                 gathernUrl: '', 
                 bookingUrl: '', 
                 airbnbUrl: '', 
-                lastSource: 'جاذر إن'
+                lastSource: 'Gathern'
             });
             renderDashboard();
-            showToast('تمت إضافة وحدة عقارية جديدة بنجاح');
+            showToast(currentLang === 'ar' ? 'تمت إضافة وحدة عقارية جديدة بنجاح' : 'New unit added successfully');
         }
 
         function deleteApt(id) {
             apartments = apartments.filter(a => a.id !== id);
             renderDashboard();
-            showToast('تم حذف الوحدة من النظام');
+            showToast(currentLang === 'ar' ? 'تم حذف الوحدة من النظام' : 'Unit deleted from system');
         }
 
         function toggleStatus(id) {
             const apt = apartments.find(a => a.id === id);
             apt.status = apt.status === 'available' ? 'booked' : 'available';
             if(apt.status === 'booked') {
-                apt.lastSource = 'إغلاق يدوي / نظام منسوب';
+                apt.lastSource = currentLang === 'ar' ? 'إغلاق يدوي / نظام منسوب' : 'Manual Close / Mansoub System';
             }
             
             const logContainer = document.getElementById('log-container');
-            const timeNow = new Date().toLocaleTimeString('ar-SA');
+            const timeNow = new Date().toLocaleTimeString(currentLang === 'ar' ? 'ar-SA' : 'en-US');
             const actionText = apt.status === 'booked' ? 
-                `🔒 [تزامن آلي] تم رصد حجز وإغلاق الشاغر لوحدة "${apt.name}".` : 
-                `🔓 [تزامن آلي] تم فتح المواعيد وإتاحة الوحدة "${apt.name}".`;
+                (currentLang === 'ar' ? `🔒 [تزامن آلي] تم رصد حجز وإغلاق الشاغر لوحدة "${apt.name}".` : `🔒 [Auto Sync] Booking detected, unit "${apt.name}" closed.`) : 
+                (currentLang === 'ar' ? `🔓 [تزامن آلي] تم فتح المواعيد وإتاحة الوحدة "${apt.name}".` : `🔓 [Auto Sync] Unit "${apt.name}" is now available.`);
             
-            showToast(actionText);
+            showToast(actionTest || actionText);
             
             const logItem = document.createElement('div');
             logItem.className = 'log-item';
@@ -405,7 +557,7 @@
         function syncIcal(id) {
             const apt = apartments.find(a => a.id === id);
             const logContainer = document.getElementById('log-container');
-            const timeNow = new Date().toLocaleTimeString('ar-SA');
+            const timeNow = new Date().toLocaleTimeString(currentLang === 'ar' ? 'ar-SA' : 'en-US');
             
             let countLinks = 0;
             if(apt.gathernUrl) countLinks++;
@@ -413,20 +565,23 @@
             if(apt.airbnbUrl) countLinks++;
 
             if(countLinks === 0) {
-                alert('الرجاء إدخال رابط iCal واحد على الأقل للمنصات لتفعيل عملية الفحص.');
+                alert(currentLang === 'ar' ? 'الرجاء إدخال رابط iCal واحد على الأقل للمنصات لتفعيل عملية الفحص.' : 'Please enter at least one iCal link.');
                 return;
             }
 
-            showToast(`جاري فحص وتحديث تقويمات الوحدة "${apt.name}"...`);
+            showToast(currentLang === 'ar' ? `جاري فحص وتحديث تقويمات الوحدة "${apt.name}"...` : `Checking calendars for unit "${apt.name}"...`);
             
             setTimeout(() => {
-                showToast('تمت المزامنة بنجاح وعدم وجود تعارضات!');
+                showToast(currentLang === 'ar' ? 'تمت المزامنة بنجاح وعدم وجود تعارضات!' : 'Sync completed successfully with no conflicts!');
                 const logItem = document.createElement('div');
                 logItem.className = 'log-item';
-                logItem.innerHTML = `<span>🌐 [فحص iCal] تم فحص تقويمات المنصات لوحدة "${apt.name}" وتأكيد التزامن التام.</span> <strong>${timeNow}</strong>`;
+                logItem.innerHTML = `<span>${currentLang === 'ar' ? `🌐 [فحص iCal] تم فحص تقويمات المنصات لوحدة "${apt.name}" وتأكيد التزامن التام.` : `🌐 [iCal Check] Calendars checked for unit "${apt.name}".`}</span> <strong>${timeNow}</strong>`;
                 logContainer.prepend(logItem);
             }, 1000);
         }
+
+        // Apply initial language state if already logged in or on load
+        applyTranslations();
     </script>
 </body>
 </html>
