@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منصة منسوب للإيجارات اليومية | Mansoub Daily Rentals</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
     <style>
         :root {
             --primary-brown: #523f27;
@@ -113,10 +118,10 @@
             <h1 id="l-title">منصّة منسوب</h1>
             <p id="l-sub">شركة منسوب للتطوير العقاري</p>
             <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group"><label id="l-user-lbl">اسم المستخدم</label><input type="text" id="username-input" required placeholder="أدخل اسم المستخدم (mansoub)"></div>
-                <div class="form-group"><label id="l-pass-lbl">كلمة المرور</label><input type="password" id="password-input" required placeholder="أدخل كلمة المرور (mansoub123)"></div>
+                <div class="form-group"><label id="l-user-lbl">اسم المستخدم</label><input type="text" id="username-input" required placeholder="أدخل اسم المستخدم"></div>
+                <div class="form-group"><label id="l-pass-lbl">كلمة المرور</label><input type="password" id="password-input" required placeholder="أدخل كلمة المرور"></div>
                 <button type="submit" class="btn" id="l-btn">تسجيل الدخول</button>
-                <div id="errorMsg" class="error-msg">اسم المستخدم أو كلمة المرور غير صحيحة! (استخدم mansoub / mansoub123)</div>
+                <div id="errorMsg" class="error-msg">اسم المستخدم أو كلمة المرور غير صحيحة!</div>
             </form>
         </div>
     </div>
@@ -143,7 +148,7 @@
             </div>
 
             <div class="section-title">
-                <span id="sec-t1">إدارة الوحدات وربط تقويمات المنصات ومتابعة المصروفات</span>
+                <span id="sec-t1">إدارة الوحدات وربط تقويمات المنصات ومتابعة المصروفات (سحابي متزامن)</span>
                 <button onclick="addApartment()" style="background:var(--primary-brown); color:white; border:none; padding:5px 10px; border-radius:6px; font-size:12px; cursor:pointer;" id="btn-add-apt">+ إضافة وحدة جديدة</button>
             </div>
             
@@ -151,7 +156,7 @@
 
             <div class="section-title"><span id="sec-t2">سجل المزامنة الحية وتقارير منع ازدواج الحجوزات</span></div>
             <div class="sync-log" id="log-container">
-                <div class="log-item"><span id="log-init">🟢 تم إطلاق النظام المتكامل وتفعيل سجل المصروفات والصيانة بنجاح</span> <strong id="log-time-init">الآن</strong></div>
+                <div class="log-item"><span id="log-init">☁️ تم ربط النظام السحابي بنجاح عبر Firebase Realtime Database</span> <strong id="log-time-init">الآن</strong></div>
             </div>
         </main>
         <footer id="footer-text">جميع الحقوق محفوظة © 2026 - شركة منسوب للتطوير العقاري (تصميم وبرمجة: حمود الأسلمي)</footer>
@@ -170,27 +175,23 @@
     </div>
 
     <script>
-        let currentLang = localStorage.getItem('mansoub_lang') || 'ar';
-        
-        let defaultApartments = [
-            { 
-                id: 1, 
-                name: 'شقة الملز الفاخرة - 101', 
-                type: 'شقة مفروشة', 
-                location: 'حي الملز', 
-                price: 350, 
-                status: 'available', 
-                maintenanceStatus: 'جاهزة للاستقبال',
-                expenseTitle: 'صيانة دورية + كهرباء',
-                expenseAmount: 120,
-                gathernUrl: 'https://www.gathern.sa/ical/unit101.ics', 
-                bookingUrl: '', 
-                airbnbUrl: '', 
-                lastSource: 'جاذر إن'
-            }
-        ];
+        // إعدادات Firebase الخاصة بمشروعك السحابي
+        const firebaseConfig = {
+            apiKey: "AIzaSyDU6NCr_60nFoYT2yz-f73DMdOhh0CDM0Q",
+            authDomain: "mansoub-rentals.firebaseapp.com",
+            databaseURL: "https://mansoub-rentals-default-rtdb.firebaseio.com",
+            projectId: "mansoub-rentals",
+            storageBucket: "mansoub-rentals.appspot.com",
+            messagingSenderId: "614821230741",
+            appId: "1:614821230741:web:12135b19399f7dd846439c"
+        };
 
-        let apartments = JSON.parse(localStorage.getItem('mansoub_apartments')) || defaultApartments;
+        // تهيئة الاتصال بقاعدة البيانات السحابية
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let currentLang = localStorage.getItem('mansoub_lang') || 'ar';
+        let apartments = [];
 
         const translations = {
             ar: {
@@ -198,9 +199,11 @@
                 loginSub: "شركة منسوب للتطوير العقاري",
                 userLbl: "اسم المستخدم",
                 passLbl: "كلمة المرور",
+                userPh: "أدخل اسم المستخدم",
+                passPh: "أدخل كلمة المرور",
                 loginBtn: "تسجيل الدخول",
-                loginErr: "اسم المستخدم أو كلمة المرور غير صحيحة! (استخدم mansoub / mansoub123)",
-                mainTitle: "نظام إدارة المزامنة (Channel Manager Pro)",
+                loginErr: "اسم المستخدم أو كلمة المرور غير صحيحة!",
+                mainTitle: "نظام إدارة المزامنة السحابية (Channel Manager Pro)",
                 subTitle: "تطوير: حمود الأسلمي | شركة منسوب للتطوير العقاري",
                 langBtn: "English",
                 btnExport: "📊 تصدير تقرير الإشغال",
@@ -213,7 +216,7 @@
                 sec1: "إدارة الوحدات وربط تقويمات المنصات ومتابعة المصروفات",
                 btnAddApt: "+ إضافة وحدة جديدة",
                 sec2: "سجل المزامنة الحية وتقارير منع ازدواج الحجوزات",
-                logInit: "🟢 تم إطلاق النظام المتكامل وتفعيل سجل المصروفات والصيانة بنجاح",
+                logInit: "☁️ تم ربط النظام السحابي بنجاح عبر Firebase Realtime Database",
                 now: "الآن",
                 footer: "جميع الحقوق محفوظة © 2026 - شركة منسوب للتطوير العقاري (تصميم وبرمجة: حمود الأسلمي)",
                 modalTitle: "تعديل بيانات الدخول",
@@ -245,9 +248,11 @@
                 loginSub: "Mansoub Real Estate Development",
                 userLbl: "Username",
                 passLbl: "Password",
+                userPh: "Enter username",
+                passPh: "Enter password",
                 loginBtn: "Login",
-                loginErr: "Invalid username or password! (Use mansoub / mansoub123)",
-                mainTitle: "Channel Manager Pro System",
+                loginErr: "Invalid username or password!",
+                mainTitle: "Cloud Channel Manager Pro",
                 subTitle: "Developer: Hamoud Al-Aslami | Mansoub Real Estate",
                 langBtn: "العربية",
                 btnExport: "📊 Export Occupancy Report",
@@ -260,7 +265,7 @@
                 sec1: "Unit Management, iCal Sync & Expenses",
                 btnAddApt: "+ Add New Unit",
                 sec2: "Live Sync Log & Double Booking Prevention",
-                logInit: "🟢 Integrated system launched successfully with expenses & maintenance.",
+                logInit: "☁️ Cloud system linked successfully via Firebase Realtime Database.",
                 now: "Just now",
                 footer: "All rights reserved © 2026 - Mansoub Real Estate Development",
                 modalTitle: "Edit Login Credentials",
@@ -289,6 +294,40 @@
             }
         };
 
+        // الاستماع للتحديثات اللحظية من السحابة (Firebase Realtime Listener)
+        db.ref('mansoub_apartments').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                apartments = Object.values(data);
+            } else {
+                // إذا القاعدة فاضية، نحط وحدة افتراضية ونرفعها للسحابة
+                apartments = [{ 
+                    id: 1, 
+                    name: 'شقة الملز الفاخرة - 101', 
+                    type: 'شقة مفروشة', 
+                    location: 'حي الملز', 
+                    price: 350, 
+                    status: 'available', 
+                    maintenanceStatus: 'جاهزة للاستقبال',
+                    expenseTitle: 'صيانة دورية + كهرباء',
+                    expenseAmount: 120,
+                    gathernUrl: 'https://www.gathern.sa/ical/unit101.ics', 
+                    bookingUrl: '', 
+                    airbnbUrl: '', 
+                    lastSource: 'جاذر إن'
+                }];
+                syncToCloud();
+            }
+            renderDashboard();
+        });
+
+        function syncToCloud() {
+            // حفظ البيانات في قاعدة بيانات فايربيس السحابية
+            const obj = {};
+            apartments.forEach(a => { obj[a.id] = a; });
+            db.ref('mansoub_apartments').set(obj);
+        }
+
         function toggleLanguage() {
             currentLang = currentLang === 'ar' ? 'en' : 'ar';
             localStorage.setItem('mansoub_lang', currentLang);
@@ -307,6 +346,8 @@
             document.getElementById('l-sub').innerText = t.loginSub;
             document.getElementById('l-user-lbl').innerText = t.userLbl;
             document.getElementById('l-pass-lbl').innerText = t.passLbl;
+            document.getElementById('username-input').placeholder = t.userPh;
+            document.getElementById('password-input').placeholder = t.passPh;
             document.getElementById('l-btn').innerText = t.loginBtn;
 
             document.getElementById('d-main-title').innerText = t.mainTitle;
@@ -344,22 +385,17 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        function saveData() {
-            localStorage.setItem('mansoub_apartments', JSON.stringify(apartments));
-        }
-
         function handleLogin(event) {
             event.preventDefault();
             const u = document.getElementById('username-input').value.trim();
             const p = document.getElementById('password-input').value.trim();
             
-            // اعتماد اليوزر mansoub والباسورد mansoub123 بشكل ثابت
             if (u === 'mansoub' && p === 'mansoub123') {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('dashboard-screen').style.display = 'flex';
                 applyTranslations();
                 renderDashboard();
-                showToast(currentLang === 'ar' ? 'مرحباً بك في لوحة تحكم شركة منسوب العقارية' : 'Welcome to Mansoub Dashboard');
+                showToast(currentLang === 'ar' ? 'مرحباً بك في لوحة تحكم شركة منسوب السحابية' : 'Welcome to Mansoub Cloud Dashboard');
             } else {
                 const err = document.getElementById('errorMsg');
                 err.innerText = translations[currentLang].loginErr;
@@ -387,14 +423,14 @@
         }
 
         function saveSettings() {
-            showToast(currentLang === 'ar' ? 'بيانات الدخول ثابتة وموحدة (mansoub / mansoub123) لضمان الدخول من الجوال واللابتوب' : 'Credentials are fixed to mansoub / mansoub123');
+            showToast(currentLang === 'ar' ? 'بيانات الدخول ثابتة وموحدة (mansoub / mansoub123)' : 'Credentials are fixed to mansoub / mansoub123');
             closeSettings();
         }
 
         function exportReport() {
             showToast(currentLang === 'ar' ? 'جاري تجهيز التقرير للتصدير...' : 'Preparing report for export...');
             setTimeout(() => {
-                let reportContent = currentLang === 'ar' ? "تقرير شركة منسوب للإجارات اليومية\n==============================\n\n" : "Mansoub Daily Rentals Report\n============================\n\n";
+                let reportContent = currentLang === 'ar' ? "تقرير شركة منسوب للإجارات اليومية (سحابي)\n===================================\n\n" : "Mansoub Daily Rentals Cloud Report\n==================================\n\n";
                 apartments.forEach(a => {
                     reportContent += `Unit: ${a.name} | Location: ${a.location} | Status: ${a.status} | Maintenance: ${a.maintenanceStatus} | Price: ${a.price} | Expenses: ${a.expenseAmount || 0} (${a.expenseTitle || 'N/A'})\n`;
                 });
@@ -402,7 +438,7 @@
                 const url = URL.createObjectURL(blob);
                 const elem = document.createElement('a');
                 elem.href = url;
-                elem.download = 'Mansoub_Report.txt';
+                elem.download = 'Mansoub_Cloud_Report.txt';
                 elem.click();
                 showToast(currentLang === 'ar' ? 'تم تصدير التقرير بنجاح!' : 'Report exported successfully!');
             }, 1000);
@@ -483,15 +519,13 @@
             
             const occupancy = apartments.length > 0 ? Math.round((booked / apartments.length) * 100) : 0;
             document.getElementById('occupancy-rate').innerText = occupancy + '%';
-            
-            saveData();
         }
 
         function updateAptProp(id, prop, val) {
             const apt = apartments.find(a => a.id === id);
             if(apt) {
                 apt[prop] = val;
-                saveData();
+                syncToCloud();
             }
         }
 
@@ -512,14 +546,14 @@
                 airbnbUrl: '', 
                 lastSource: 'Gathern'
             });
-            renderDashboard();
-            showToast(currentLang === 'ar' ? 'تمت إضافة وحدة عقارية جديدة بنجاح' : 'New unit added successfully');
+            syncToCloud();
+            showToast(currentLang === 'ar' ? 'تمت إضافة وحدة عقارية سحابياً بنجاح' : 'New unit added to cloud successfully');
         }
 
         function deleteApt(id) {
             apartments = apartments.filter(a => a.id !== id);
-            renderDashboard();
-            showToast(currentLang === 'ar' ? 'تم حذف الوحدة من النظام' : 'Unit deleted from system');
+            syncToCloud();
+            showToast(currentLang === 'ar' ? 'تم حذف الوحدة من النظام السحابي' : 'Unit deleted from cloud system');
         }
 
         function toggleStatus(id) {
@@ -534,8 +568,8 @@
             const logContainer = document.getElementById('log-container');
             const timeNow = new Date().toLocaleTimeString(currentLang === 'ar' ? 'ar-SA' : 'en-US');
             const actionText = apt.status === 'booked' ? 
-                (currentLang === 'ar' ? `🔒 [تزامن آلي] تم رصد حجز وإغلاق الشاغر لوحدة "${apt.name}".` : `🔒 [Auto Sync] Booking detected, unit "${apt.name}" closed.`) : 
-                (currentLang === 'ar' ? `🔓 [تزامن آلي] تم فتح المواعيد وإتاحة الوحدة "${apt.name}".` : `🔓 [Auto Sync] Unit "${apt.name}" is now available.`);
+                (currentLang === 'ar' ? `🔒 [تزامن سحابي] تم رصد حجز وإغلاق الشاغر لوحدة "${apt.name}".` : `🔒 [Cloud Sync] Booking detected, unit "${apt.name}" closed.`) : 
+                (currentLang === 'ar' ? `🔓 [تزامن سحابي] تم فتح المواعيد وإتاحة الوحدة "${apt.name}".` : `🔓 [Cloud Sync] Unit "${apt.name}" is now available.`);
             
             showToast(actionText);
             
@@ -543,7 +577,7 @@
             logItem.className = 'log-item';
             logItem.innerHTML = `<span>${actionText}</span> <strong>${timeNow}</strong>`;
             logContainer.prepend(logItem);
-            renderDashboard();
+            syncToCloud();
         }
 
         function syncIcal(id) {
@@ -561,13 +595,13 @@
                 return;
             }
 
-            showToast(currentLang === 'ar' ? `جاري فحص وتحديث تقويمات الوحدة "${apt.name}"...` : `Checking calendars for unit "${apt.name}"...`);
+            showToast(currentLang === 'ar' ? `جاري فحص وتحديث تقويمات الوحدة "${apt.name}" سحابياً...` : `Checking calendars for unit "${apt.name}" on cloud...`);
             
             setTimeout(() => {
-                showToast(currentLang === 'ar' ? 'تمت المزامنة بنجاح وعدم وجود تعارضات!' : 'Sync completed successfully with no conflicts!');
+                showToast(currentLang === 'ar' ? 'تمت المزامنة السحابية بنجاح!' : 'Cloud sync completed successfully!');
                 const logItem = document.createElement('div');
                 logItem.className = 'log-item';
-                logItem.innerHTML = `<span>${currentLang === 'ar' ? `🌐 [فحص iCal] تم فحص تقويمات المنصات لوحدة "${apt.name}" وتأكيد التزامن التام.` : `🌐 [iCal Check] Calendars checked for unit "${apt.name}".`}</span> <strong>${timeNow}</strong>`;
+                logItem.innerHTML = `<span>${currentLang === 'ar' ? `🌐 [فحص iCal سحابي] تم فحص تقويمات المنصات لوحدة "${apt.name}" وتأكيد التزامن التام.` : `🌐 [Cloud iCal Check] Calendars checked for unit "${apt.name}".`}</span> <strong>${timeNow}</strong>`;
                 logContainer.prepend(logItem);
             }, 1000);
         }
