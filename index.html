@@ -91,7 +91,6 @@
         .sync-log { background: var(--white); padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); max-height: 150px; overflow-y: auto; }
         .log-item { font-size: 12px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; color: #555; }
 
-        /* Toast Notifications */
         #toast-container { position: fixed; bottom: 20px; inset-inline-start: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
         .toast { background: var(--primary-brown); color: var(--white); padding: 12px 20px; border-radius: 8px; font-size: 13px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-inline-start: 5px solid var(--accent-gold); animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards; }
         @keyframes slideIn { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -114,10 +113,10 @@
             <h1 id="l-title">منصّة منسوب</h1>
             <p id="l-sub">شركة منسوب للتطوير العقاري</p>
             <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group"><label id="l-user-lbl">اسم المستخدم</label><input type="text" id="username-input" required placeholder="أدخل اسم المستخدم"></div>
-                <div class="form-group"><label id="l-pass-lbl">كلمة المرور</label><input type="password" id="password-input" required placeholder="أدخل كلمة المرور"></div>
+                <div class="form-group"><label id="l-user-lbl">اسم المستخدم</label><input type="text" id="username-input" required placeholder="أدخل اسم المستخدم (mansoub)"></div>
+                <div class="form-group"><label id="l-pass-lbl">كلمة المرور</label><input type="password" id="password-input" required placeholder="أدخل كلمة المرور (mansoub123)"></div>
                 <button type="submit" class="btn" id="l-btn">تسجيل الدخول</button>
-                <div id="errorMsg" class="error-msg">اسم المستخدم أو كلمة المرور غير صحيحة!</div>
+                <div id="errorMsg" class="error-msg">اسم المستخدم أو كلمة المرور غير صحيحة! (استخدم mansoub / mansoub123)</div>
             </form>
         </div>
     </div>
@@ -172,7 +171,6 @@
 
     <script>
         let currentLang = localStorage.getItem('mansoub_lang') || 'ar';
-        let systemAuth = JSON.parse(localStorage.getItem('mansoub_auth')) || { user: 'admin', pass: 'mansoub123' };
         
         let defaultApartments = [
             { 
@@ -201,7 +199,7 @@
                 userLbl: "اسم المستخدم",
                 passLbl: "كلمة المرور",
                 loginBtn: "تسجيل الدخول",
-                loginErr: "اسم المستخدم أو كلمة المرور غير صحيحة!",
+                loginErr: "اسم المستخدم أو كلمة المرور غير صحيحة! (استخدم mansoub / mansoub123)",
                 mainTitle: "نظام إدارة المزامنة (Channel Manager Pro)",
                 subTitle: "تطوير: حمود الأسلمي | شركة منسوب للتطوير العقاري",
                 langBtn: "English",
@@ -248,7 +246,7 @@
                 userLbl: "Username",
                 passLbl: "Password",
                 loginBtn: "Login",
-                loginErr: "Invalid username or password!",
+                loginErr: "Invalid username or password! (Use mansoub / mansoub123)",
                 mainTitle: "Channel Manager Pro System",
                 subTitle: "Developer: Hamoud Al-Aslami | Mansoub Real Estate",
                 langBtn: "العربية",
@@ -348,14 +346,15 @@
 
         function saveData() {
             localStorage.setItem('mansoub_apartments', JSON.stringify(apartments));
-            localStorage.setItem('mansoub_auth', JSON.stringify(systemAuth));
         }
 
         function handleLogin(event) {
             event.preventDefault();
-            const u = document.getElementById('username-input').value;
-            const p = document.getElementById('password-input').value;
-            if (u === systemAuth.user && p === systemAuth.pass) {
+            const u = document.getElementById('username-input').value.trim();
+            const p = document.getElementById('password-input').value.trim();
+            
+            // اعتماد اليوزر mansoub والباسورد mansoub123 بشكل ثابت
+            if (u === 'mansoub' && p === 'mansoub123') {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('dashboard-screen').style.display = 'flex';
                 applyTranslations();
@@ -378,8 +377,8 @@
         }
 
         function openSettings() {
-            document.getElementById('new-user').value = systemAuth.user;
-            document.getElementById('new-pass').value = systemAuth.pass;
+            document.getElementById('new-user').value = 'mansoub';
+            document.getElementById('new-pass').value = 'mansoub123';
             document.getElementById('settings-modal').style.display = 'flex';
         }
 
@@ -388,17 +387,8 @@
         }
 
         function saveSettings() {
-            const nu = document.getElementById('new-user').value;
-            const np = document.getElementById('new-pass').value;
-            if(nu && np) {
-                systemAuth.user = nu;
-                systemAuth.pass = np;
-                saveData();
-                showToast(currentLang === 'ar' ? 'تم تحديث بيانات الدخول بنجاح!' : 'Credentials updated successfully!');
-                closeSettings();
-            } else {
-                alert(currentLang === 'ar' ? 'الرجاء إدخال بيانات صحيحة.' : 'Please enter valid data.');
-            }
+            showToast(currentLang === 'ar' ? 'بيانات الدخول ثابتة وموحدة (mansoub / mansoub123) لضمان الدخول من الجوال واللابتوب' : 'Credentials are fixed to mansoub / mansoub123');
+            closeSettings();
         }
 
         function exportReport() {
