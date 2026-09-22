@@ -700,3 +700,212 @@ function parseICalDate(line) {
     }
 }
 </script>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة منسوب للتطوير العقاري - إدارة الإيجارات</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary-brown: #523427;
+            --cream-bg: #f9f6f0;
+            --accent-gold: #c5a880;
+            --text-dark: #2c2215;
+            --white: #ffffff;
+            --success: #2e7d32;
+            --danger: #c62828;
+        }
+        body {
+            font-family: Tahoma, sans-serif;
+            background-color: var(--cream-bg);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            background-color: var(--primary-brown);
+            color: var(--white);
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-check-all {
+            background-color: var(--accent-gold);
+            color: var(--text-dark);
+            border: none;
+            padding: 12px 24px;
+            font-weight: bold;
+            font-size: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-check-all:hover {
+            background-color: #b4976f;
+        }
+        .units-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        .unit-card {
+            background-color: var(--white);
+            border: 1px solid #e0d8c5;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .unit-card h3 {
+            margin-top: 0;
+            color: var(--primary-brown);
+            border-bottom: 2px solid var(--cream-bg);
+            padding-bottom: 10px;
+        }
+        .unit-card p {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .unit-card input[type="text"] {
+            width: 100%;
+            padding: 9px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            background-color: #e8f5e9;
+            color: var(--success);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h2>منصة منسوب للإيجارات اليومية</h2>
+            <button class="btn-check-all" id="checkAllBtn">فحص الكل</button>
+        </header>
+
+        <div class="units-grid">
+            <!-- وحدة شقة السويدي الكبيرة A3 -->
+            <div class="unit-card" data-unit-id="unit-a3">
+                <h3>شقة السويدي الكبيرة A3</h3>
+                <p><span>نوع الوحدة:</span> <strong>شقة مفروشة</strong></p>
+                <p><span>الموقع:</span> <strong>الرياض</strong></p>
+                <p><span>السعر (ريال):</span> <strong>400</strong></p>
+                <p><span>حالة الوحدة:</span> <span class="status-badge" id="status-unit-a3">جاهزة للاستقبال</span></p>
+                
+                <label>رابط الـ iCal لـ Gathern:</label>
+                <input type="text" class="ical-input" value="https://gathern.co/ical/729989tpffxEvw.ics">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const checkAllBtn = document.getElementById("checkAllBtn");
+            
+            if (checkAllBtn) {
+                checkAllBtn.addEventListener("click", async () => {
+                    alert("جاري فحص تقويمات جاذر إن لجميع الوحدات...");
+                    
+                    const unitCards = document.querySelectorAll(".unit-card");
+                    let updatedCount = 0;
+                    
+                    for (let card of unitCards) {
+                        const icalInput = card.querySelector(".ical-input");
+                        const statusSpan = card.querySelector(".status-badge");
+                        
+                        if (icalInput && icalInput.value) {
+                            try {
+                                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(icalInput.value)}`;
+                                const response = await fetch(proxyUrl);
+                                const data = await response.json();
+                                
+                                if (data.contents) {
+                                    const icsText = data.contents;
+                                    const now = new Date(); // تاريخ اليوم (22 سبتمبر 2026)
+                                    let isBooked = false;
+
+                                    const lines = icsText.split(/\r\n|\n|\r/);
+                                    let startDate = null;
+                                    let endDate = null;
+
+                                    for (let line of lines) {
+                                        if (line.startsWith("DTSTART")) {
+                                            startDate = parseICalDate(line);
+                                        } else if (line.startsWith("DTEND")) {
+                                            endDate = parseICalDate(line);
+                                        }
+
+                                        if (startDate && endDate) {
+                                            if (now >= startDate && now <= endDate) {
+                                                isBooked = true;
+                                                break;
+                                            }
+                                            startDate = null;
+                                            endDate = null;
+                                        }
+                                    }
+
+                                    if (isBooked) {
+                                        statusSpan.textContent = "محجوزة";
+                                        statusSpan.style.backgroundColor = "#ffebee";
+                                        statusSpan.style.color = "#c62828";
+                                    } else {
+                                        statusSpan.textContent = "جاهزة للاستقبال";
+                                        statusSpan.style.backgroundColor = "#e8f5e9";
+                                        statusSpan.style.color = "#2e7d32";
+                                    }
+                                    updatedCount++;
+                                }
+                            } catch (err) {
+                                console.error("خطأ أثناء جلب التقويم:", err);
+                            }
+                        }
+                    }
+                    
+                    alert(`تم الانتهاء من الفحص وتحديث حالات (${updatedCount}) من الوحدات بنجاح!`);
+                });
+            }
+        });
+
+        function parseICalDate(line) {
+            try {
+                const parts = line.split(":");
+                if (parts.length < 2) return null;
+                let dateStr = parts[1].trim();
+                let year = parseInt(dateStr.substring(0, 4), 10);
+                let month = parseInt(dateStr.substring(4, 6), 10) - 1;
+                let day = parseInt(dateStr.substring(6, 8), 10);
+                return new Date(year, month, day);
+            } catch (e) {
+                return null;
+            }
+        }
+    </script>
+</body>
+</html>
