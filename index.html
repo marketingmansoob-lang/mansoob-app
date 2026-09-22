@@ -136,6 +136,7 @@
                 <button class="lang-switch-btn" onclick="toggleLanguage()" id="lang-btn">English</button>
                 <button class="action-header-btn" onclick="exportReport()" id="btn-export">📊 تصدير تقرير الإشغال</button>
                 <button class="action-header-btn" onclick="openSettings()" id="btn-settings">⚙️ إعدادات الحساب</button>
+                <button class="action-header-btn" onclick="checkAllIcal()" id="checkAllBtn" style="background-color: var(--accent-gold); color: var(--primary-brown);">🔄 فحص الكل</button>
                 <button class="logout-btn" onclick="handleLogout()" id="btn-logout">خروج</button>
             </div>
         </header>
@@ -159,7 +160,7 @@
                 <div class="log-item"><span id="log-init">☁️ تم ربط النظام السحابي بنجاح عبر Firebase Realtime Database</span> <strong id="log-time-init">الآن</strong></div>
             </div>
         </main>
-        <footer id="footer-text">جميع الحقوق محفوظة © 2026 - شركة منسوب للتطوير العقاري (تصميم وبرمجة: حمود الأسلمي)</footer>
+        <footer id="footer-text">جميع الحقوق محفوظة ©️ 2026 - شركة منسوب للتطوير العقاري (تصميم وبرمجة: حمود الأسلمي)</footer>
     </div>
 
     <div id="settings-modal">
@@ -175,7 +176,6 @@
     </div>
 
     <script>
-        // إعدادات Firebase الخاصة بمشروعك السحابي
         const firebaseConfig = {
             apiKey: "AIzaSyDU6NCr_60nFoYT2yz-f73DMdOhh0CDM0Q",
             authDomain: "mansoub-rentals.firebaseapp.com",
@@ -186,7 +186,6 @@
             appId: "1:614821230741:web:12135b19399f7dd846439c"
         };
 
-        // تهيئة الاتصال بقاعدة البيانات السحابية
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
@@ -218,7 +217,7 @@
                 sec2: "سجل المزامنة الحية وتقارير منع ازدواج الحجوزات",
                 logInit: "☁️ تم ربط النظام السحابي بنجاح عبر Firebase Realtime Database",
                 now: "الآن",
-                footer: "جميع الحقوق محفوظة © 2026 - شركة منسوب للتطوير العقاري (تصميم وبرمجة: حمود الأسلمي)",
+                footer: "جميع الحقوق محفوظة ©️ 2026 - شركة منسوب للتطوير العقاري (تصميم وبرمجة: حمود الأسلمي)",
                 modalTitle: "تعديل بيانات الدخول",
                 modalUser: "اسم المستخدم الجديد",
                 modalPass: "كلمة المرور الجديدة",
@@ -238,7 +237,7 @@
                 lockedSource: "🔒 مصدر الحجز المغلق:",
                 btnBook: "حجز يدوي / إغلاق",
                 btnFree: "فتح الشاغر",
-                btnSync: "🔄 فحص الكل",
+                btnSync: "🔄 فحص",
                 btnDel: "حذف",
                 statusAvail: "متاحة",
                 statusBooked: "محجوزة"
@@ -267,7 +266,7 @@
                 sec2: "Live Sync Log & Double Booking Prevention",
                 logInit: "☁️ Cloud system linked successfully via Firebase Realtime Database.",
                 now: "Just now",
-                footer: "All rights reserved © 2026 - Mansoub Real Estate Development",
+                footer: "All rights reserved ©️ 2026 - Mansoub Real Estate Development",
                 modalTitle: "Edit Login Credentials",
                 modalUser: "New Username",
                 modalPass: "New Password",
@@ -287,31 +286,29 @@
                 lockedSource: "🔒 Locked Source:",
                 btnBook: "Manual Book / Close",
                 btnFree: "Open Slot",
-                btnSync: "🔄 Sync All",
+                btnSync: "🔄 Check",
                 btnDel: "Delete",
                 statusAvail: "Available",
                 statusBooked: "Booked"
             }
         };
 
-        // الاستماع للتحديثات اللحظية من السحابة (Firebase Realtime Listener)
         db.ref('mansoub_apartments').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 apartments = Object.values(data);
             } else {
-                // إذا القاعدة فاضية، نحط وحدة افتراضية ونرفعها للسحابة
                 apartments = [{ 
                     id: 1, 
-                    name: 'شقة الملز الفاخرة - 101', 
+                    name: 'شقة السويدي الكبيرة A3', 
                     type: 'شقة مفروشة', 
-                    location: 'حي الملز', 
-                    price: 350, 
+                    location: 'الرياض', 
+                    price: 400, 
                     status: 'available', 
                     maintenanceStatus: 'جاهزة للاستقبال',
-                    expenseTitle: 'صيانة دورية + كهرباء',
-                    expenseAmount: 120,
-                    gathernUrl: 'https://www.gathern.sa/ical/unit101.ics', 
+                    expenseTitle: 'صيانة دورية',
+                    expenseAmount: 100,
+                    gathernUrl: 'https://gathern.co/ical/729989tpffxEvw.ics', 
                     bookingUrl: '', 
                     airbnbUrl: '', 
                     lastSource: 'جاذر إن'
@@ -322,7 +319,6 @@
         });
 
         function syncToCloud() {
-            // حفظ البيانات في قاعدة بيانات فايربيس السحابية
             const obj = {};
             apartments.forEach(a => { obj[a.id] = a; });
             db.ref('mansoub_apartments').set(obj);
@@ -356,6 +352,7 @@
             document.getElementById('btn-export').innerText = t.btnExport;
             document.getElementById('btn-settings').innerText = t.btnSettings;
             document.getElementById('btn-logout').innerText = t.btnLogout;
+            document.getElementById('checkAllBtn').innerText = t.currentLang === 'en' ? '🔄 Check All' : '🔄 فحص الكل';
 
             document.getElementById('stat-t1').innerText = t.stat1;
             document.getElementById('stat-t2').innerText = t.stat2;
@@ -413,8 +410,6 @@
         }
 
         function openSettings() {
-            document.getElementById('new-user').value = 'mansoub';
-            document.getElementById('new-pass').value = 'mansoub123';
             document.getElementById('settings-modal').style.display = 'flex';
         }
 
@@ -423,16 +418,16 @@
         }
 
         function saveSettings() {
-            showToast(currentLang === 'ar' ? 'بيانات الدخول ثابتة وموحدة (mansoub / mansoub123)' : 'Credentials are fixed to mansoub / mansoub123');
+            showToast(currentLang === 'ar' ? 'بيانات الدخول ثابتة وموحدة (mansoub / mansoub123)' : 'Credentials are fixed');
             closeSettings();
         }
 
         function exportReport() {
-            showToast(currentLang === 'ar' ? 'جاري تجهيز التقرير للتصدير...' : 'Preparing report for export...');
+            showToast(currentLang === 'ar' ? 'جاري تجهيز التقرير للتصدير...' : 'Preparing report...');
             setTimeout(() => {
-                let reportContent = currentLang === 'ar' ? "تقرير شركة منسوب للإجارات اليومية (سحابي)\n===================================\n\n" : "Mansoub Daily Rentals Cloud Report\n==================================\n\n";
+                let reportContent = "تقرير شركة منسوب للإيجارات اليومية (سحابي)\n===================================\n\n";
                 apartments.forEach(a => {
-                    reportContent += `Unit: ${a.name} | Location: ${a.location} | Status: ${a.status} | Maintenance: ${a.maintenanceStatus} | Price: ${a.price} | Expenses: ${a.expenseAmount || 0} (${a.expenseTitle || 'N/A'})\n`;
+                    reportContent += `Unit: ${a.name} | Location: ${a.location} | Status: ${a.status} | Price: ${a.price}\n`;
                 });
                 const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
                 const url = URL.createObjectURL(blob);
@@ -440,7 +435,7 @@
                 elem.href = url;
                 elem.download = 'Mansoub_Cloud_Report.txt';
                 elem.click();
-                showToast(currentLang === 'ar' ? 'تم تصدير التقرير بنجاح!' : 'Report exported successfully!');
+                showToast(currentLang === 'ar' ? 'تم تصدير التقرير بنجاح!' : 'Report exported!');
             }, 1000);
         }
 
@@ -456,16 +451,15 @@
                 card.className = 'apartment-card';
                 card.innerHTML = `
                     <div class="apt-header">
-                        <input type="text" class="input-edit" value="${apt.name}" onchange="updateAptProp(${apt.id}, 'name', this.value)" placeholder="Unit Name">
+                        <input type="text" class="input-edit" value="${apt.name}" onchange="updateAptProp(${apt.id}, 'name', this.value)">
                         <span class="badge ${apt.status}">${apt.status === 'available' ? t.statusAvail : t.statusBooked}</span>
                     </div>
                     <div class="apt-details">
                         <div><strong>${t.aptTypeLbl}</strong> 
                             <select onchange="updateAptProp(${apt.id}, 'type', this.value)">
-                                <option value="شقة مفروشة" ${apt.type==='شقة مفروشة'?'selected':''}>${currentLang==='ar'?'شقة مفروشة':'Furnished Apartment'}</option>
-                                <option value="دوبلكس" ${apt.type==='دوبلكس'?'selected':''}>${currentLang==='ar'?'دوبلكس':'Duplex'}</option>
-                                <option value="فيلا" ${apt.type==='فيلا'?'selected':''}>${currentLang==='ar'?'فيلا':'Villa'}</option>
-                                <option value="تاون هاوس" ${apt.type==='تاون هاوس'?'selected':''}>${currentLang==='ar'?'تاون هاوس':'Townhouse'}</option>
+                                <option value="شقة مفروشة" ${apt.type==='شقة مفروشة'?'selected':''}>شقة مفروشة</option>
+                                <option value="دوبلكس" ${apt.type==='دوبلكس'?'selected':''}>دوبلكس</option>
+                                <option value="فيلا" ${apt.type==='فيلا'?'selected':''}>فيلا</option>
                             </select>
                         </div>
                         <div><strong>${t.locLbl}</strong> <input type="text" value="${apt.location}" onchange="updateAptProp(${apt.id}, 'location', this.value)"></div>
@@ -482,25 +476,19 @@
                         <label>${t.expenseLbl}</label>
                         <div class="expense-row">
                             <input type="text" style="flex:2;" value="${apt.expenseTitle || ''}" onchange="updateAptProp(${apt.id}, 'expenseTitle', this.value)" placeholder="${t.expensePh}">
-                            <input type="number" style="flex:1;" value="${apt.expenseAmount || 0}" onchange="updateAptProp(${apt.id}, 'expenseAmount', Number(this.value))" placeholder="${t.expenseAmountPh}">
+                            <input type="number" style="flex:1;" value="${apt.expenseAmount || 0}" onchange="updateAptProp(${apt.id}, 'expenseAmount', Number(this.value))">
                         </div>
                     </div>
 
                     <div class="ical-box">
                         <label>${t.icalLbl}</label>
-                        <input type="text" value="${apt.gathernUrl || ''}" onchange="updateAptProp(${apt.id}, 'gathernUrl', this.value)" placeholder="Gathern iCal link">
-                        <input type="text" value="${apt.bookingUrl || ''}" onchange="updateAptProp(${apt.id}, 'bookingUrl', this.value)" placeholder="Booking iCal link">
-                        <input type="text" value="${apt.airbnbUrl || ''}" onchange="updateAptProp(${apt.id}, 'airbnbUrl', this.value)" placeholder="Airbnb iCal link">
+                        <input type="text" id="ical-${apt.id}" value="${apt.gathernUrl || ''}" onchange="updateAptProp(${apt.id}, 'gathernUrl', this.value)" placeholder="Gathern iCal link">
                     </div>
 
                     <div class="sync-platforms">
                         <span style="font-size:11px; font-weight:bold; color:#555;">${t.platformsLbl}</span>
                         <span class="platform-tag gathern ${apt.status === 'booked' ? 'locked' : ''}">Gathern</span>
-                        <span class="platform-tag booking ${apt.status === 'booked' ? 'locked' : ''}">Booking</span>
-                        <span class="platform-tag airbnb ${apt.status === 'booked' ? 'locked' : ''}">Airbnb</span>
                     </div>
-                    
-                    ${apt.status === 'booked' ? `<div style="font-size:11px; color:var(--danger); margin-bottom:10px; font-weight:bold;">${t.lockedSource} ${apt.lastSource || 'External'}</div>` : ''}
 
                     <div class="actions-box">
                         <button class="toggle-btn ${apt.status === 'available' ? 'btn-book' : 'btn-free'}" onclick="toggleStatus(${apt.id})">
@@ -516,7 +504,6 @@
             document.getElementById('total-count').innerText = apartments.length;
             document.getElementById('free-count').innerText = free;
             document.getElementById('booked-count').innerText = booked;
-            
             const occupancy = apartments.length > 0 ? Math.round((booked / apartments.length) * 100) : 0;
             document.getElementById('occupancy-rate').innerText = occupancy + '%';
         }
@@ -539,111 +526,45 @@
                 price: 400, 
                 status: 'available', 
                 maintenanceStatus: 'جاهزة للاستقبال',
-                expenseTitle: 'تجهيزات أولية',
-                expenseAmount: 0,
                 gathernUrl: '', 
-                bookingUrl: '', 
-                airbnbUrl: '', 
                 lastSource: 'Gathern'
             });
             syncToCloud();
-            showToast(currentLang === 'ar' ? 'تمت إضافة وحدة عقارية سحابياً بنجاح' : 'New unit added to cloud successfully');
+            showToast('تمت إضافة الوحدة بنجاح');
         }
 
         function deleteApt(id) {
             apartments = apartments.filter(a => a.id !== id);
             syncToCloud();
-            showToast(currentLang === 'ar' ? 'تم حذف الوحدة من النظام السحابي' : 'Unit deleted from cloud system');
+            showToast('تم حذف الوحدة');
         }
 
         function toggleStatus(id) {
             const apt = apartments.find(a => a.id === id);
             if (!apt) return;
-            
             apt.status = apt.status === 'available' ? 'booked' : 'available';
-            if(apt.status === 'booked') {
-                apt.lastSource = currentLang === 'ar' ? 'إغلاق يدوي / نظام منسوب' : 'Manual Close / Mansoub System';
-            }
-            
-            const logContainer = document.getElementById('log-container');
-            const timeNow = new Date().toLocaleTimeString(currentLang === 'ar' ? 'ar-SA' : 'en-US');
-            const actionText = apt.status === 'booked' ? 
-                (currentLang === 'ar' ? `🔒 [تزامن سحابي] تم رصد حجز وإغلاق الشاغر لوحدة "${apt.name}".` : `🔒 [Cloud Sync] Booking detected, unit "${apt.name}" closed.`) : 
-                (currentLang === 'ar' ? `🔓 [تزامن سحابي] تم فتح المواعيد وإتاحة الوحدة "${apt.name}".` : `🔓 [Cloud Sync] Unit "${apt.name}" is now available.`);
-            
-            showToast(actionText);
-            
-            const logItem = document.createElement('div');
-            logItem.className = 'log-item';
-            logItem.innerHTML = `<span>${actionText}</span> <strong>${timeNow}</strong>`;
-            logContainer.prepend(logItem);
             syncToCloud();
+            renderDashboard();
         }
 
-        function syncIcal(id) {
-            const apt = apartments.find(a => a.id === id);
-            const logContainer = document.getElementById('log-container');
-            const timeNow = new Date().toLocaleTimeString(currentLang === 'ar' ? 'ar-SA' : 'en-US');
-            
-            let countLinks = 0;
-            if(apt.gathernUrl) countLinks++;
-            if(apt.bookingUrl) countLinks++;
-            if(apt.airbnbUrl) countLinks++;
-
-            if(countLinks === 0) {
-                alert(currentLang === 'ar' ? 'الرجاء إدخال رابط iCal واحد على الأقل للمنصات لتفعيل عملية الفحص.' : 'Please enter at least one iCal link.');
-                return;
-            }
-
-            showToast(currentLang === 'ar' ? `جاري فحص وتحديث تقويمات الوحدة "${apt.name}" سحابياً...` : `Checking calendars for unit "${apt.name}" on cloud...`);
-            
-            setTimeout(() => {
-                showToast(currentLang === 'ar' ? 'تمت المزامنة السحابية بنجاح!' : 'Cloud sync completed successfully!');
-                const logItem = document.createElement('div');
-                logItem.className = 'log-item';
-                logItem.innerHTML = `<span>${currentLang === 'ar' ? `🌐 [فحص iCal سحابي] تم فحص تقويمات المنصات لوحدة "${apt.name}" وتأكيد التزامن التام.` : `🌐 [Cloud iCal Check] Calendars checked for unit "${apt.name}".`}</span> <strong>${timeNow}</strong>`;
-                logContainer.prepend(logItem);
-            }, 1000);
-        }
-
-        applyTranslations();
-    </script>
-</body>
-</html>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    // البحث عن زر "فحص الكل" في الصفحة
-    const checkAllBtn = Array.from(document.querySelectorAll("button")).find(el => el.textContent.includes("فحص الكل"));
-    
-    if (checkAllBtn) {
-        checkAllBtn.addEventListener("click", async () => {
-            alert("جاري فحص تقويمات جاذر إن لجميع الوحدات...");
-            
-            // استخراج جميع مربعات الوحدات في الصفحة
-            const unitCards = document.querySelectorAll(".unit-card, div"); // أو تحديد الكلاس المناسب لكرت الوحدة عندك
+        // دالة فحص رابط الـ iCal الفردي أو الجماعي المحدثة بدقة
+        async function checkAllIcal() {
+            showToast("جاري فحص تقويمات جاذر إن لجميع الوحدات...");
             let updatedCount = 0;
+            const logContainer = document.getElementById('log-container');
+            const timeNow = new Date().toLocaleTimeString('ar-SA');
 
-            for (let card of unitCards) {
-                // البحث عن حقل رابط الـ iCal الخاص بجاذر إن داخل الكرت
-                const inputs = card.querySelectorAll("input");
-                let icalUrl = "";
-                
-                inputs.forEach(input => {
-                    if (input.value && input.value.includes("gathern.co/ical")) {
-                        icalUrl = input.value;
-                    }
-                });
-
-                if (icalUrl) {
+            for (let apt of apartments) {
+                const icalUrl = apt.gathernUrl;
+                if (icalUrl && icalUrl.includes("gathern.co")) {
                     try {
-                        // استخدام وسيط لتجاوز حظر الـ CORS وجلب ملف الـ iCal
                         const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(icalUrl)}`;
                         const response = await fetch(proxyUrl);
                         const data = await response.json();
                         
                         if (data.contents) {
                             const icsText = data.contents;
-                            const now = new Date(); // تاريخ اليوم (22 سبتمبر 2026)
+                            const now = new Date();
                             let isBooked = false;
 
                             const lines = icsText.split(/\r\n|\n|\r/);
@@ -667,231 +588,30 @@ document.addEventListener("DOMContentLoaded", () => {
                                 }
                             }
 
-                            // العثور على زر أو نص حالة الشقة وتحديثه بناءً على النتيجة
-                            const statusElement = card.querySelector(".status-text, span, div"); 
-                            if (statusElement && (statusElement.textContent.includes("جاهزة") || statusElement.textContent.includes("محجوزة"))) {
-                                statusElement.textContent = isBooked ? "محجوزة" : "جاهزة للاستقبال";
-                                updatedCount++;
-                            }
+                            // تحديث حالة الوحدة بناءً على نتيجة الفحص الفعلية للتقويم
+                            apt.status = isBooked ? 'booked' : 'available';
+                            updatedCount++;
                         }
                     } catch (err) {
-                        console.error("خطأ في جلب رابط iCal:", err);
+                        console.error("خطأ في جلب iCal:", err);
                     }
                 }
             }
 
-            alert(`تم الانتهاء من الفحص وتحديث حالات الوحدات بنجاح!`);
-        });
-    }
-});
+            syncToCloud();
+            renderDashboard();
 
-// دالة لتحويل تاريخ الـ iCal إلى صيغة زمنية صحيحة
-function parseICalDate(line) {
-    try {
-        const parts = line.split(":");
-        if (parts.length < 2) return null;
-        let dateStr = parts[1].trim();
-        let year = parseInt(dateStr.substring(0, 4), 10);
-        let month = parseInt(dateStr.substring(4, 6), 10) - 1;
-        let day = parseInt(dateStr.substring(6, 8), 10);
-        return new Date(year, month, day);
-    } catch (e) {
-        return null;
-    }
-}
-</script>
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة منسوب للتطوير العقاري - إدارة الإيجارات</title>
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    
-    <style>
-        :root {
-            --primary-brown: #523427;
-            --cream-bg: #f9f6f0;
-            --accent-gold: #c5a880;
-            --text-dark: #2c2215;
-            --white: #ffffff;
-            --success: #2e7d32;
-            --danger: #c62828;
-        }
-        body {
-            font-family: Tahoma, sans-serif;
-            background-color: var(--cream-bg);
-            color: var(--text-dark);
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        header {
-            background-color: var(--primary-brown);
-            color: var(--white);
-            padding: 15px 25px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .btn-check-all {
-            background-color: var(--accent-gold);
-            color: var(--text-dark);
-            border: none;
-            padding: 12px 24px;
-            font-weight: bold;
-            font-size: 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .btn-check-all:hover {
-            background-color: #b4976f;
-        }
-        .units-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-        }
-        .unit-card {
-            background-color: var(--white);
-            border: 1px solid #e0d8c5;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        .unit-card h3 {
-            margin-top: 0;
-            color: var(--primary-brown);
-            border-bottom: 2px solid var(--cream-bg);
-            padding-bottom: 10px;
-        }
-        .unit-card p {
-            margin: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .unit-card input[type="text"] {
-            width: 100%;
-            padding: 9px;
-            margin-top: 5px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 14px;
-            background-color: #e8f5e9;
-            color: var(--success);
-        }
-    </style>
-</head>
-<body>
+            const logItem = document.createElement('div');
+            logItem.className = 'log-item';
+            logItem.innerHTML = `<span>🌐 [فحص iCal سحابي] تم فحص وتحديث (${updatedCount}) من وحدات المنصة بنجاح.</span> <strong>${timeNow}</strong>`;
+            logContainer.prepend(logItem);
 
-    <div class="container">
-        <header>
-            <h2>منصة منسوب للإيجارات اليومية</h2>
-            <button class="btn-check-all" id="checkAllBtn">فحص الكل</button>
-        </header>
+            alert(`تم الانتهاء من الفحص وتحديث حالات (${updatedCount}) من الوحدات بنجاح!`);
+        }
 
-        <div class="units-grid">
-            <!-- وحدة شقة السويدي الكبيرة A3 -->
-            <div class="unit-card" data-unit-id="unit-a3">
-                <h3>شقة السويدي الكبيرة A3</h3>
-                <p><span>نوع الوحدة:</span> <strong>شقة مفروشة</strong></p>
-                <p><span>الموقع:</span> <strong>الرياض</strong></p>
-                <p><span>السعر (ريال):</span> <strong>400</strong></p>
-                <p><span>حالة الوحدة:</span> <span class="status-badge" id="status-unit-a3">جاهزة للاستقبال</span></p>
-                
-                <label>رابط الـ iCal لـ Gathern:</label>
-                <input type="text" class="ical-input" value="https://gathern.co/ical/729989tpffxEvw.ics">
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const checkAllBtn = document.getElementById("checkAllBtn");
-            
-            if (checkAllBtn) {
-                checkAllBtn.addEventListener("click", async () => {
-                    alert("جاري فحص تقويمات جاذر إن لجميع الوحدات...");
-                    
-                    const unitCards = document.querySelectorAll(".unit-card");
-                    let updatedCount = 0;
-                    
-                    for (let card of unitCards) {
-                        const icalInput = card.querySelector(".ical-input");
-                        const statusSpan = card.querySelector(".status-badge");
-                        
-                        if (icalInput && icalInput.value) {
-                            try {
-                                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(icalInput.value)}`;
-                                const response = await fetch(proxyUrl);
-                                const data = await response.json();
-                                
-                                if (data.contents) {
-                                    const icsText = data.contents;
-                                    const now = new Date(); // تاريخ اليوم (22 سبتمبر 2026)
-                                    let isBooked = false;
-
-                                    const lines = icsText.split(/\r\n|\n|\r/);
-                                    let startDate = null;
-                                    let endDate = null;
-
-                                    for (let line of lines) {
-                                        if (line.startsWith("DTSTART")) {
-                                            startDate = parseICalDate(line);
-                                        } else if (line.startsWith("DTEND")) {
-                                            endDate = parseICalDate(line);
-                                        }
-
-                                        if (startDate && endDate) {
-                                            if (now >= startDate && now <= endDate) {
-                                                isBooked = true;
-                                                break;
-                                            }
-                                            startDate = null;
-                                            endDate = null;
-                                        }
-                                    }
-
-                                    if (isBooked) {
-                                        statusSpan.textContent = "محجوزة";
-                                        statusSpan.style.backgroundColor = "#ffebee";
-                                        statusSpan.style.color = "#c62828";
-                                    } else {
-                                        statusSpan.textContent = "جاهزة للاستقبال";
-                                        statusSpan.style.backgroundColor = "#e8f5e9";
-                                        statusSpan.style.color = "#2e7d32";
-                                    }
-                                    updatedCount++;
-                                }
-                            } catch (err) {
-                                console.error("خطأ أثناء جلب التقويم:", err);
-                            }
-                        }
-                    }
-                    
-                    alert(`تم الانتهاء من الفحص وتحديث حالات (${updatedCount}) من الوحدات بنجاح!`);
-                });
-            }
-        });
+        async function syncIcal(id) {
+            await checkAllIcal();
+        }
 
         function parseICalDate(line) {
             try {
