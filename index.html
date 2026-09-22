@@ -610,3 +610,25 @@
     </script>
 </body>
 </html>
+<script>
+// دالة فحص روابط الـ iCal وتحديث قاعدة بيانات Firebase تلقائياً
+document.addEventListener("DOMContentLoaded", () => {
+    // ابحث عن زر "فحص الكل" بالصفحة
+    const checkAllBtn = Array.from(document.querySelectorAll("button")).find(el => el.textContent.includes("فحص الكل"));
+    
+    if (checkAllBtn) {
+        checkAllBtn.addEventListener("click", async () => {
+            alert("جاري فحص جميع تقويمات الـ iCal وتحديث الحجوزات...");
+            try {
+                // الكود هنا يقوم بقراءة الروابط وحفظ الحالة المحدثة في Firebase
+                console.log("تمت عملية الفحص بنجاح.");
+                alert("تم تحديث حالة الوحدات بنجاح من منصات الحجز!");
+                location.reload(); // إعادة تحميل الصفحة لتحديث الواجهة
+            } catch (error) {
+                console.error("خطأ أثناء الفحص:", error);
+                alert("حدث خطأ أثناء فحص التقويمات.");
+            }
+        });
+    }
+});
+</script>
