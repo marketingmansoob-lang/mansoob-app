@@ -22,13 +22,11 @@
             --danger: #c62828;
             --warning: #ed6c02;
             --gathern: #00b0ff;
-            --booking: #003580;
-            --airbnb: #ff385c;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--cream-bg); color: var(--text-dark); min-height: 100vh; position: relative; }
         
-        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, var(--primary-brown), #3a2c1b); padding: 20px; }
+        #login-screen { display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary-brown), #3a2c1b); z-index: 9999; padding: 20px; }
         .login-card { background: var(--white); padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; max-width: 400px; text-align: center; border-top: 5px solid var(--accent-gold); position: relative; }
         .login-card h1 { color: var(--primary-brown); font-size: 22px; margin-bottom: 5px; }
         .login-card p { color: #777; font-size: 13px; margin-bottom: 20px; }
@@ -83,8 +81,6 @@
         .sync-platforms { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
         .platform-tag { background: var(--cream-card); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; color: #666; }
         .platform-tag.gathern { border-inline-start: 3px solid var(--gathern); }
-        .platform-tag.booking { border-inline-start: 3px solid var(--booking); }
-        .platform-tag.airbnb { border-inline-start: 3px solid var(--airbnb); }
         .platform-tag.locked { background: #ffebee; color: var(--danger); text-decoration: line-through; opacity: 0.7; }
         
         .actions-box { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -96,12 +92,10 @@
         .sync-log { background: var(--white); padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); max-height: 150px; overflow-y: auto; }
         .log-item { font-size: 12px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; color: #555; }
 
-        #toast-container { position: fixed; bottom: 20px; inset-inline-start: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--primary-brown); color: var(--white); padding: 12px 20px; border-radius: 8px; font-size: 13px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-inline-start: 5px solid var(--accent-gold); animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards; }
-        @keyframes slideIn { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+        #toast-container { position: fixed; bottom: 20px; inset-inline-start: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--primary-brown); color: var(--white); padding: 12px 20px; border-radius: 8px; font-size: 13px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-inline-start: 5px solid var(--accent-gold); }
 
-        #settings-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; padding: 20px; z-index: 100; }
+        #settings-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; padding: 20px; z-index: 10000; }
         .modal-content { background: var(--white); padding: 25px; border-radius: 12px; width: 100%; max-width: 350px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: inherit; }
         .modal-content h3 { color: var(--primary-brown); margin-bottom: 15px; font-size: 16px; }
 
@@ -112,6 +106,7 @@
 
     <div id="toast-container"></div>
 
+    <!-- شاشة تسجيل الدخول المستقلة -->
     <div id="login-screen">
         <div class="login-card">
             <button onclick="toggleLanguage()" style="position:absolute; top:15px; inset-inline-end:15px; background:var(--cream-bg); border:1px solid var(--accent-gold); color:var(--primary-brown); padding:3px 8px; border-radius:5px; font-size:11px; cursor:pointer; font-weight:bold;" id="login-lang-btn">English</button>
@@ -126,6 +121,7 @@
         </div>
     </div>
 
+    <!-- لوحة التحكم -->
     <div id="dashboard-screen">
         <header>
             <div class="header-title">
@@ -163,6 +159,7 @@
         <footer id="footer-text">جميع الحقوق محفوظة ©️ 2026 - شركة منسوب للتطوير العقاري (تصميم وبرمجة: حمود الأسلمي)</footer>
     </div>
 
+    <!-- نافذة الإعدادات -->
     <div id="settings-modal">
         <div class="modal-content">
             <h3 id="m-title">تعديل بيانات الدخول</h3>
@@ -191,6 +188,7 @@
 
         let currentLang = localStorage.getItem('mansoub_lang') || 'ar';
         let apartments = [];
+        let autoSyncInterval = null;
 
         const translations = {
             ar: {
@@ -231,7 +229,6 @@
                 maintWorking: "🟠 تحت الصيانة والنظافة",
                 expenseLbl: "💰 سجل المصروفات التشغيلية:",
                 expensePh: "بيان المصروف (صيانة، فاتورة...)",
-                expenseAmountPh: "المبلغ",
                 icalLbl: "🔗 روابط الـ iCal للمنصات الخارجيّة:",
                 platformsLbl: "المنصات:",
                 lockedSource: "🔒 مصدر الحجز المغلق:",
@@ -280,7 +277,6 @@
                 maintWorking: "🟠 Under Maintenance",
                 expenseLbl: "💰 Operational Expenses Log:",
                 expensePh: "Expense description (maintenance, bill...)",
-                expenseAmountPh: "Amount",
                 icalLbl: "🔗 External Platforms iCal Links:",
                 platformsLbl: "Platforms:",
                 lockedSource: "🔒 Locked Source:",
@@ -309,8 +305,6 @@
                     expenseTitle: 'صيانة دورية',
                     expenseAmount: 100,
                     gathernUrl: 'https://gathern.co/ical/729989tpffxEvw.ics', 
-                    bookingUrl: '', 
-                    airbnbUrl: '', 
                     lastSource: 'جاذر إن'
                 }];
                 syncToCloud();
@@ -352,7 +346,7 @@
             document.getElementById('btn-export').innerText = t.btnExport;
             document.getElementById('btn-settings').innerText = t.btnSettings;
             document.getElementById('btn-logout').innerText = t.btnLogout;
-            document.getElementById('checkAllBtn').innerText = t.currentLang === 'en' ? '🔄 Check All' : '🔄 فحص الكل';
+            document.getElementById('checkAllBtn').innerText = currentLang === 'en' ? '🔄 Check All' : '🔄 فحص الكل';
 
             document.getElementById('stat-t1').innerText = t.stat1;
             document.getElementById('stat-t2').innerText = t.stat2;
@@ -393,6 +387,16 @@
                 applyTranslations();
                 renderDashboard();
                 showToast(currentLang === 'ar' ? 'مرحباً بك في لوحة تحكم شركة منسوب السحابية' : 'Welcome to Mansoub Cloud Dashboard');
+                
+                // تشغيل الفحص التلقائي فور تسجيل الدخول
+                checkAllIcal(true);
+                
+                // جدولة الفحص التلقائي كل 5 دقائق
+                if (autoSyncInterval) clearInterval(autoSyncInterval);
+                autoSyncInterval = setInterval(() => {
+                    checkAllIcal(true);
+                }, 5 * 60 * 1000);
+
             } else {
                 const err = document.getElementById('errorMsg');
                 err.innerText = translations[currentLang].loginErr;
@@ -401,6 +405,7 @@
         }
 
         function handleLogout() {
+            if (autoSyncInterval) clearInterval(autoSyncInterval);
             document.getElementById('dashboard-screen').style.display = 'none';
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('username-input').value = '';
@@ -547,9 +552,11 @@
             renderDashboard();
         }
 
-        // دالة فحص رابط الـ iCal الفردي أو الجماعي المحدثة بدقة
-        async function checkAllIcal() {
-            showToast("جاري فحص تقويمات جاذر إن لجميع الوحدات...");
+        async function checkAllIcal(isBackground = false) {
+            if (!isBackground) {
+                showToast(currentLang === 'ar' ? "جاري فحص تقويمات المنصات للوحدات..." : "Checking platform iCal calendars...");
+            }
+            
             let updatedCount = 0;
             const logContainer = document.getElementById('log-container');
             const timeNow = new Date().toLocaleTimeString('ar-SA');
@@ -588,9 +595,11 @@
                                 }
                             }
 
-                            // تحديث حالة الوحدة بناءً على نتيجة الفحص الفعلية للتقويم
-                            apt.status = isBooked ? 'booked' : 'available';
-                            updatedCount++;
+                            // إذا وجد حجز نشط في التقويم، يحولها فوراً إلى محجوزة
+                            if (isBooked) {
+                                apt.status = 'booked';
+                                updatedCount++;
+                            }
                         }
                     } catch (err) {
                         console.error("خطأ في جلب iCal:", err);
@@ -601,16 +610,17 @@
             syncToCloud();
             renderDashboard();
 
-            const logItem = document.createElement('div');
-            logItem.className = 'log-item';
-            logItem.innerHTML = `<span>🌐 [فحص iCal سحابي] تم فحص وتحديث (${updatedCount}) من وحدات المنصة بنجاح.</span> <strong>${timeNow}</strong>`;
-            logContainer.prepend(logItem);
-
-            alert(`تم الانتهاء من الفحص وتحديث حالات (${updatedCount}) من الوحدات بنجاح!`);
+            if (!isBackground) {
+                const logItem = document.createElement('div');
+                logItem.className = 'log-item';
+                logItem.innerHTML = `<span>🌐 [فحص iCal سحابي] تم فحص التقويمات وتحديث الوحدات النشطة.</span> <strong>${timeNow}</strong>`;
+                logContainer.prepend(logItem);
+                showToast(currentLang === 'ar' ? 'تم الانتهاء من الفحص بنجاح!' : 'Check completed successfully!');
+            }
         }
 
         async function syncIcal(id) {
-            await checkAllIcal();
+            await checkAllIcal(false);
         }
 
         function parseICalDate(line) {
