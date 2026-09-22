@@ -611,24 +611,92 @@
 </body>
 </html>
 <script>
-// دالة فحص روابط الـ iCal وتحديث قاعدة بيانات Firebase تلقائياً
 document.addEventListener("DOMContentLoaded", () => {
-    // ابحث عن زر "فحص الكل" بالصفحة
+    // البحث عن زر "فحص الكل" في الصفحة
     const checkAllBtn = Array.from(document.querySelectorAll("button")).find(el => el.textContent.includes("فحص الكل"));
     
     if (checkAllBtn) {
         checkAllBtn.addEventListener("click", async () => {
-            alert("جاري فحص جميع تقويمات الـ iCal وتحديث الحجوزات...");
-            try {
-                // الكود هنا يقوم بقراءة الروابط وحفظ الحالة المحدثة في Firebase
-                console.log("تمت عملية الفحص بنجاح.");
-                alert("تم تحديث حالة الوحدات بنجاح من منصات الحجز!");
-                location.reload(); // إعادة تحميل الصفحة لتحديث الواجهة
-            } catch (error) {
-                console.error("خطأ أثناء الفحص:", error);
-                alert("حدث خطأ أثناء فحص التقويمات.");
+            alert("جاري فحص تقويمات جاذر إن لجميع الوحدات...");
+            
+            // استخراج جميع مربعات الوحدات في الصفحة
+            const unitCards = document.querySelectorAll(".unit-card, div"); // أو تحديد الكلاس المناسب لكرت الوحدة عندك
+            let updatedCount = 0;
+
+            for (let card of unitCards) {
+                // البحث عن حقل رابط الـ iCal الخاص بجاذر إن داخل الكرت
+                const inputs = card.querySelectorAll("input");
+                let icalUrl = "";
+                
+                inputs.forEach(input => {
+                    if (input.value && input.value.includes("gathern.co/ical")) {
+                        icalUrl = input.value;
+                    }
+                });
+
+                if (icalUrl) {
+                    try {
+                        // استخدام وسيط لتجاوز حظر الـ CORS وجلب ملف الـ iCal
+                        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(icalUrl)}`;
+                        const response = await fetch(proxyUrl);
+                        const data = await response.json();
+                        
+                        if (data.contents) {
+                            const icsText = data.contents;
+                            const now = new Date(); // تاريخ اليوم (22 سبتمبر 2026)
+                            let isBooked = false;
+
+                            const lines = icsText.split(/\r\n|\n|\r/);
+                            let startDate = null;
+                            let endDate = null;
+
+                            for (let line of lines) {
+                                if (line.startsWith("DTSTART")) {
+                                    startDate = parseICalDate(line);
+                                } else if (line.startsWith("DTEND")) {
+                                    endDate = parseICalDate(line);
+                                }
+
+                                if (startDate && endDate) {
+                                    if (now >= startDate && now <= endDate) {
+                                        isBooked = true;
+                                        break;
+                                    }
+                                    startDate = null;
+                                    endDate = null;
+                                }
+                            }
+
+                            // العثور على زر أو نص حالة الشقة وتحديثه بناءً على النتيجة
+                            const statusElement = card.querySelector(".status-text, span, div"); 
+                            if (statusElement && (statusElement.textContent.includes("جاهزة") || statusElement.textContent.includes("محجوزة"))) {
+                                statusElement.textContent = isBooked ? "محجوزة" : "جاهزة للاستقبال";
+                                updatedCount++;
+                            }
+                        }
+                    } catch (err) {
+                        console.error("خطأ في جلب رابط iCal:", err);
+                    }
+                }
             }
+
+            alert(`تم الانتهاء من الفحص وتحديث حالات الوحدات بنجاح!`);
         });
     }
 });
+
+// دالة لتحويل تاريخ الـ iCal إلى صيغة زمنية صحيحة
+function parseICalDate(line) {
+    try {
+        const parts = line.split(":");
+        if (parts.length < 2) return null;
+        let dateStr = parts[1].trim();
+        let year = parseInt(dateStr.substring(0, 4), 10);
+        let month = parseInt(dateStr.substring(4, 6), 10) - 1;
+        let day = parseInt(dateStr.substring(6, 8), 10);
+        return new Date(year, month, day);
+    } catch (e) {
+        return null;
+    }
+}
 </script>
